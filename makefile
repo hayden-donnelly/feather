@@ -1,2 +1,13 @@
+EXEC		= game.app
+CC			= gcc
+EXTENSION	= c
+SRCS_DIR	= src
+
+LFLAGS		+= -lm -lsdl2 -lSDL2_Image
+SRCS		= $(shell find $(SRCS_DIR) -type f -name *.$(EXTENSION))
+
 all:
-	gcc main.c engine.c modules/utils.c modules/camera.c modules/sprite.c modules/box_collider.c modules/tilemap.c modules/transform.c input.c game.c -o play.app -lsdl2 -lSDL2_Image
+	CC $(SRCS) -o $(EXEC) $(LFLAGS)
+
+run:
+	./$(EXEC)
