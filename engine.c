@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include "engine.h"
 
+static double timer_last;
+static double timer_now;
+static double timer_dt;
+static double timer_fixed_dt;
+static double timer_accumulator;
+
 static void events(SDL_Event event)
 {
     // Handle all events, making sure previous and current input states are updated properly
@@ -20,26 +26,7 @@ static void events(SDL_Event event)
 static void render(void)
 {
     SDL_RenderClear(renderer);
-    for(int i = 0; i < MAX_SPRITES; i++)
-    {
-        if(sprites[i] != NULL)
-        {
-            sprites[i]->dst.x = 0;
-            sprites[i]->dst.y = 0;
-
-            Transform *root_parent = sprites[i]->transform.parent;
-            while(root_parent != NULL)
-            {
-                sprites[i]->dst.x += root_parent->x;
-                sprites[i]->dst.y += root_parent->y;
-                root_parent = root_parent->parent;
-            }
-
-            sprites[i]->dst.x += cam_x;
-            sprites[i]->dst.y += cam_y;
-            SDL_RenderCopy(renderer, sprites[i]->tex, NULL, &sprites[i]->dst);
-        }
-    }
+    game_render();
     SDL_RenderPresent(renderer); 
 }
 
