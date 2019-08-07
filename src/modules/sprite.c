@@ -40,14 +40,20 @@ Sprite sprite_init(char *tex_path, Transform sprite_transform, const Camera *cam
     return new_sprite; 
 }
 
-void sprite_subscribe(Sprite *desired_sprite)
+void sprite_add(Sprite *sprite)
 {
     for(int i = 0; i < MAX_SPRITES; i++)
     {
         if(sprites[i] == NULL || sprites[i]->active == 0)
         {
-            sprites[i] = desired_sprite;
+            sprite->active = 1;
+            sprites[i] = sprite;
             return;
         }
     }
+}
+
+void sprite_remove(Sprite *sprite)
+{
+    sprite->active = 0;
 }
