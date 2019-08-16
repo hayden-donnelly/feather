@@ -10,5 +10,5 @@ typedef struct Tilemap
     int *gid_map;  // Stores the actual tile IDs for rendering
     int *collision_map;
 } Tilemap;
-Vec2_Int tilemap_collision(const Vec2_Int *movement, const Box_Collider *col, const Tilemap *tile_map);
+Vec2_Int tilemap_collision(const Vec2_Int *movement, const Box_Collider *col, const Tilemap *tilemap);
 void tilemap_render(const Tilemap *tilemap, const Camera *cam);

@@ -17,4 +17,5 @@ void sprite_add(Sprite *sprite);
 void sprite_remove(Sprite *sprite);
 void sprite_render(const Camera *cam);
 
-Sprite *sprites[MAX_SPRITES];
+const int number_of_sprites;
+Sprite *sprites;

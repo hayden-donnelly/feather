@@ -6,61 +6,62 @@
 #include "modules/box_collider.h"
 #include "modules/tilemap.h"
 
-Sprite test;
-Camera cam;
+#define RANDOM_SHIT 500
 
-enum component_tag
-{
-    sprite_tag = 1,
-    col_tag = 2,
-    tilemap_tag = 3
-};
-
-typedef union
-{
-    Sprite sprite;
-    Box_Collider col;
-    Tilemap tilemap;
-} Component;
-
-typedef struct
-{
-    int component_tag;
-    Component component;
-
-} Tagged_Component;
-
-typedef struct 
-{
-    Transform transform;
-    Tagged_Component *components;
-} Entity;
-
-Entity player;
+static Camera cam;
+static Tilemap tilemap;
 
 typedef struct
 {
     int health;
-} main_player;
+    Sprite sprite;
+    Box_Collider col;
+    Transform transform;
+} Base_Entity;
+Base_Entity player;
+
+static void player_move()
+{
+    Vec2_Int movement = vec2_int_zero();
+
+    if(input_get_key(SDL_SCANCODE_A))
+    {
+        movement.x = -1;
+    }
+    else if(input_get_key(SDL_SCANCODE_D))
+    {
+        movement.x = 1;
+    }
+    if(input_get_key(SDL_SCANCODE_W))
+    {
+        movement.y = -1;
+    }
+    else if(input_get_key(SDL_SCANCODE_S))
+    {
+        movement.y = 1;
+    }
+
+    // currently causes seg fault cause tile map isnt intialized
+    //movement = tilemap_collision(&movement, &player.col, &tilemap);
+    player.transform.pos.x += movement.x;
+    player.transform.pos.y += movement.y;
+}
 
 void game_start()
 {
     cam = camera_init(vec2_int_zero(), renderer);
-    test = sprite_init("Town.png", transform_set(0, 0, NULL), &cam);
-    sprite_add(&test);
 
+    player.health = 10;
     player.transform = transform_set(0, 0, NULL);
-    player.components = malloc(sizeof(Component));
-    player.components[0].component = (Component)sprite_init("Town.png", transform_set(0, 0, &player.transform), &cam);
-    player.components[0].component_tag = sprite_tag;
+    player.sprite = sprite_init("Town.png", transform_set(0, 0, &player.transform), &cam);
+    sprite_add(&player.sprite);
+    player.col = box_collider_init(16, 16, transform_set(0, 0, &player.transform));
+    box_collider_add(&player.col);
 }
 
 void game_update()
 {
-    if(input_get_key_down(SDL_SCANCODE_A))
-    {
-        printf("Hello World\n");
-    }
+    player_move();
 }
 
 void game_cleanup()

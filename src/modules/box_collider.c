@@ -1,6 +1,6 @@
 #include "box_collider.h"
 
-Box_Collider init_box_collider(int w, int h, Transform col_transform)
+Box_Collider box_collider_init(int w, int h, Transform col_transform)
 {
     Box_Collider new_box_collider;
     new_box_collider.active = 1;
@@ -10,14 +10,20 @@ Box_Collider init_box_collider(int w, int h, Transform col_transform)
     return new_box_collider;
 }
 
-void subscribe_to_box_colliders(Box_Collider *desired_box_collider)
+void box_collider_add(Box_Collider *col)
 {
     for(int i = 0; i < MAX_BOX_COLLIDERS; i++)
     {
         if(box_colliders[i] == NULL || box_colliders[i]->active == 0)
         {
-            box_colliders[i] = desired_box_collider;
+            col->active = 1;
+            box_colliders[i] = col;
             return;
         }
     }
+}
+
+void box_collider_remove(Box_Collider *col)
+{
+    col->active = 0;
 }

@@ -54,6 +54,8 @@ void loop(void)
 
 int engine_init(void)
 {
+    printf("&d\n", RANDOM_SHIT);
+
     int window_width = 1280;
     int window_height = 720;
     int target_render_width = 160;

@@ -13,8 +13,8 @@ void sprite_render(const Camera *cam)
             Transform *root_parent = sprites[i]->transform.parent;
             while(root_parent != NULL)
             {
-                sprites[i]->dst.x += root_parent->x;
-                sprites[i]->dst.y += root_parent->y;
+                sprites[i]->dst.x += root_parent->pos.x;
+                sprites[i]->dst.y += root_parent->pos.y;
                 root_parent = root_parent->parent;
             }
 
@@ -44,10 +44,10 @@ void sprite_add(Sprite *sprite)
 {
     for(int i = 0; i < MAX_SPRITES; i++)
     {
-        if(sprites[i] == NULL || sprites[i]->active == 0)
+        if(&sprites[i] == NULL || sprites[i].active == 0)
         {
             sprite->active = 1;
-            sprites[i] = sprite;
+            sprites[i] = *sprite;
             return;
         }
     }
@@ -56,4 +56,9 @@ void sprite_add(Sprite *sprite)
 void sprite_remove(Sprite *sprite)
 {
     sprite->active = 0;
+}
+
+void sprite_init_module(int max_sprites)
+{
+    sprites = malloc(sizeof(Sprite) * max_sprites);
 }
