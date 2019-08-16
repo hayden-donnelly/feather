@@ -6,7 +6,8 @@
 #include "modules/box_collider.h"
 #include "modules/tilemap.h"
 
-#define RANDOM_SHIT 500
+#define MAX_SPRITES 500
+#define MAX_BOX_COLLIDERS 500
 
 static Camera cam;
 static Tilemap tilemap;
@@ -50,6 +51,8 @@ static void player_move()
 void game_start()
 {
     cam = camera_init(vec2_int_zero(), renderer);
+    sprite_init_module(MAX_SPRITES);
+    box_collider_init_module(MAX_BOX_COLLIDERS);
 
     player.health = 10;
     player.transform = transform_set(0, 0, NULL);
@@ -66,7 +69,8 @@ void game_update()
 
 void game_cleanup()
 {
-
+    sprite_cleanup_module();
+    box_collider_cleanup_module();
 }
 
 void game_render()
