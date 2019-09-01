@@ -19,7 +19,10 @@ typedef struct
     Box_Collider col;
     Transform transform;
 } Base_Entity;
+
 Base_Entity player;
+
+Sprite test_sprite;
 
 static void player_move()
 {
@@ -48,11 +51,10 @@ static void player_move()
     player.transform.pos.y += movement.y;
 }
 
-void game_start()
+void game_init()
 {
     cam = camera_init(vec2_int_zero(), renderer);
-    sprite_init_module(MAX_SPRITES);
-    box_collider_init_module(MAX_BOX_COLLIDERS);
+    sprite_module_init(MAX_SPRITES);
 
     player.health = 10;
     player.transform = transform_set(0, 0, NULL);
@@ -70,7 +72,6 @@ void game_update()
 void game_cleanup()
 {
     sprite_cleanup_module();
-    box_collider_cleanup_module();
 }
 
 void game_render()

@@ -104,5 +104,6 @@ void engine_cleanup(void)
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    SDL_Delay(1);
     SDL_Quit();  
 }

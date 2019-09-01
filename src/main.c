@@ -3,7 +3,7 @@
 int main()
 {
     engine_init();
-    game_start();
+    game_init();
     loop();
     game_cleanup();
     engine_cleanup();

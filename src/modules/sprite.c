@@ -1,37 +1,29 @@
 #include "sprite.h"
 #include <SDL2/SDL_image.h>
 
-static int number_of_sprites;
-static Sprite *sprites = NULL;
+static int number_of_sprites = 0;
+static Sprite **sprites = NULL;
 
 void sprite_render(const Camera *cam)
 {
-    /*for(int i = 0; i < number_of_sprites; i++)
+    for(int i = 0; i < number_of_sprites; i++)
     {
-        if(&sprites[i] != NULL && sprites[i].active == 1)
+        if(sprites[i] != NULL && sprites[i]->active == 1)
         {
-            sprites[i].dst.x = 0;
-            sprites[i].dst.y = 0;
+            sprites[i]->dst.x = 0;
+            sprites[i]->dst.y = 0;
 
-            Transform *root_parent = sprites[i].transform.parent;
+            Transform *root_parent = sprites[i]->transform.parent;
             while(root_parent != NULL)
             {
-                sprites[i].dst.x += root_parent->pos.x;
-                sprites[i].dst.y += root_parent->pos.y;
+                sprites[i]->dst.x += root_parent->pos.x;
+                sprites[i]->dst.y += root_parent->pos.y;
                 root_parent = root_parent->parent;
             }
 
-            sprites[i].dst.x += cam->pos.x;
-            sprites[i].dst.y += cam->pos.y;
-            SDL_RenderCopy(cam->renderer, sprites[i].tex, NULL, &sprites[i].dst);
-        }
-    }*/
-
-    for(int i = 0; i < number_of_sprites; i++)
-    {
-        if(&sprites[i] != NULL && sprites[i].active == 1)
-        {
-            SDL_RenderCopy(cam->renderer, sprites[i].tex, NULL, NULL);
+            sprites[i]->dst.x += cam->pos.x;
+            sprites[i]->dst.y += cam->pos.y;
+            SDL_RenderCopy(cam->renderer, sprites[i]->tex, NULL, &sprites[i]->dst);
         }
     }
 }
@@ -40,7 +32,7 @@ void sprite_render(const Camera *cam)
 Sprite sprite_init(char *tex_path, Transform sprite_transform, const Camera *cam)
 {
     Sprite new_sprite;
-    new_sprite.active = 1;
+    new_sprite.active = 0;
     new_sprite.transform = sprite_transform;
     new_sprite.tex = IMG_LoadTexture(cam->renderer, tex_path);
     int w, h;
@@ -56,10 +48,10 @@ void sprite_add(Sprite *sprite)
 {
     for(int i = 0; i < number_of_sprites; i++)
     {
-        if(&sprites[i] == NULL || sprites[i].active == 0)
+        if(sprites[i] == NULL || sprites[i]->active == 0)
         {
             sprite->active = 1;
-            sprites[i] = *sprite;
+            sprites[i] = sprite;
             return;
         }
     }
@@ -71,16 +63,21 @@ void sprite_remove(Sprite *sprite)
 }
 
 // Initializes sprite module
-void sprite_init_module(int max_sprites)
+void sprite_module_init(const int max_sprites)
 {
     if(sprites == NULL)
     {
-        sprites = malloc(sizeof(Sprite) * max_sprites);
-        number_of_sprites = max_sprites;
+        sprites = malloc(max_sprites*sizeof(Sprite*));
     }
     else
     {
         printf("Sprites already initialized\n");
+    }
+
+    number_of_sprites = max_sprites;
+    for(int i = 0; i < number_of_sprites; i++)
+    {
+        sprites[i] = NULL;
     }
 }
 
