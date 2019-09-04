@@ -11,3 +11,5 @@ void hash_add(void *hash_element, uint32_t key, Hashmap *hm)
     key = hash(key, hm);
     hm->map[key] = hash_element;
 }   
+
+// TODO: hash_remove
