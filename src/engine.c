@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "engine.h"
+#include "game.h"
 
 static double timer_last;
 static double timer_now;
@@ -7,11 +8,11 @@ static double timer_dt;
 static double timer_fixed_dt;
 static double timer_accumulator;
 
-static void events(SDL_Event event)
+static void eventsss(SDL_Event event)
 {
     // Handle all events, making sure previous and current input states are updated properly
     memcpy(input_previous_keyboard_state, input_current_keyboard_state, 512);
-    while (SDL_PollEvent(&event)) 
+    while(SDL_PollEvent(&event)) 
     {
         if(event.type == SDL_QUIT) 
         {
@@ -32,10 +33,12 @@ static void render(void)
 
 void loop(void)
 {
+
     SDL_Event event;
     running = 1;
     while(running)
     {
+        printf("%s", SDL_GetError());
         timer_last = timer_now;
         timer_now = SDL_GetPerformanceCounter();
         timer_dt = ((timer_now - timer_last)/(double)SDL_GetPerformanceFrequency());
@@ -43,7 +46,7 @@ void loop(void)
 
         while (timer_accumulator >= timer_fixed_dt)
         {
-            events(event);
+            eventsss(event);
             game_update();
             timer_accumulator -= timer_fixed_dt;
         }
@@ -96,7 +99,6 @@ int engine_init(void)
     timer_fixed_dt = 1.0/59.9;
     timer_accumulator = 0;
 
-
     return 0;
 }
 
@@ -104,6 +106,5 @@ void engine_cleanup(void)
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    SDL_Delay(1);
     SDL_Quit();  
 }

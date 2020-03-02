@@ -1,5 +1,5 @@
 #pragma once
-#include "engine.h"
+#include <SDL2/SDL.h>
 
 Uint8 input_previous_keyboard_state[512];
 Uint8 input_current_keyboard_state[512];

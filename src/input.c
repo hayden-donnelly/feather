@@ -1,4 +1,4 @@
-#include "engine.h"
+#include "input.h"
 
 // Returns true if key was pressed this frame
 int input_get_key_down(SDL_Scancode scancode)
