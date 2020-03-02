@@ -22,4 +22,4 @@ typedef struct
 } Anim_Controller;
 
 void update_anim(Component_Type *cmp_type);
-void render_anim(Component_Type *component);
+void render_anim(Component_Type *component, Component_Type *pos);

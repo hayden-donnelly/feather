@@ -10,4 +10,5 @@ typedef struct
     SDL_Rect dst;
 } Sprite;
 
-void render_sprite(Sprite *sprite, int *tile_ids ,unsigned int id_array_width, unsigned int id_array_height);
+void render_sprite(Sprite *sprite, int *tile_ids ,unsigned int id_array_width, 
+                    unsigned int id_array_height, int pos_x, int pos_y);

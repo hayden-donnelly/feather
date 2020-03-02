@@ -41,6 +41,12 @@ void game_init(void)
     health3 = get_component(&components->health, 30);
     if(health3 != NULL) { printf("HP: %d\n", health3->hp); }
 
+    Position *pos1 = malloc(sizeof(Position));
+    pos1->entity_id = 30;
+    pos1->x = 50;
+    pos1->y = 50;
+    add_component(&components->position, pos1, 30);
+
     // Animation
     Anim_Controller *anim_controller1 = malloc(sizeof(Anim_Controller));
     anim_controller1->entity_id = 30;
@@ -78,31 +84,51 @@ void game_init(void)
     add_component(&components->anim_controller, anim_controller1, 30);
 
     // Input 
-    number_of_game_inputs = 2;
-    game_inputs = malloc(sizeof(Game_Input)*2);
+    number_of_game_inputs = 4;
+    game_inputs = malloc(sizeof(Game_Input)*4);
 
-    Game_Input input1;
-    input1.scancode = SDL_SCANCODE_SPACE;
-    input1.input_name = "jump";
-    game_inputs[1] = input1;
+    Game_Input left;
+    left.scancode = SDL_SCANCODE_D;
+    left.input_name = "left";
+    game_inputs[0] = left;
 
-    Game_Input input2;
-    input2.scancode = SDL_SCANCODE_D;
-    input2.input_name = "left";
-    game_inputs[0] = input2;
+    Game_Input right;
+    right.scancode = SDL_SCANCODE_A;
+    right.input_name = "right";
+    game_inputs[1] = right;
+
+    Game_Input up;
+    up.scancode = SDL_SCANCODE_W;
+    up.input_name = "up";
+    game_inputs[2] = up;
+
+    Game_Input down;
+    down.scancode = SDL_SCANCODE_S;
+    down.input_name = "down";
+    game_inputs[3] = down;
 }
 
 void game_update(void)
 {
     update_anim(&components->anim_controller);
     
-    if(get_input_down("jump"))
+    Position *player_pos = get_component(&components->position, 30);
+
+    if(get_input("left"))
     {
-        printf("jump input\n");
+        player_pos->x += 1;
     }
-    if(get_input_down("left"))
+    else if(get_input("right"))
     {
-        printf("left input\n");
+        player_pos->x -= 1;
+    }
+    else if(get_input("up"))
+    {
+        player_pos->y -= 1;
+    }
+    else if(get_input("down"))
+    {
+        player_pos->y += 1;
     }
 }
 
@@ -113,5 +139,5 @@ void game_cleanup(void)
 
 void game_render(void)
 {
-    render_anim(&components->anim_controller);
+    render_anim(&components->anim_controller, &components->position);
 }

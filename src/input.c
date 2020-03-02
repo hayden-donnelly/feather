@@ -53,7 +53,6 @@ int get_input_down(const char *input_name)
 int get_input(const char *input_name)
 {
     SDL_Scancode sc = scancode_from_gi(input_name, game_inputs, number_of_game_inputs);
-    printf(input_name);
     return input_get_key(sc);
 }
 
