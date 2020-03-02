@@ -6,6 +6,8 @@ typedef struct
 {
     unsigned int frame_count;
     unsigned int *tile_ids;   // ID's corresponding to tileset
+    double speed;
+    double dt_accumulator;
     char loop;
 } Anim;
 

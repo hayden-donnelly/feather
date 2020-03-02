@@ -8,6 +8,8 @@ static double timer_dt;
 static double timer_fixed_dt;
 static double timer_accumulator;
 
+double read_timer_dt(void) { return timer_dt; }
+
 static void events(SDL_Event event)
 {
     // Handle all events, making sure previous and current input states are updated properly

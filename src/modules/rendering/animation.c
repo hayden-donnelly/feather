@@ -1,12 +1,20 @@
 #include "animation.h"
+#include "../../engine.h"
 #include "../../component.h"
+#include <stdio.h>
 
 void update_anim(Component_Type *cmp_type)
 {
     for(int i = 0; i < cmp_type->real_length; i++)
     {
         Anim_Controller *target = cmp_type->data[i];
-        target->frame_id++;
+        printf("%f\n", target->anims[target->anim_id].dt_accumulator);
+        target->anims[target->anim_id].dt_accumulator += 100 * read_timer_dt();
+        if(target->anims[target->anim_id].dt_accumulator >= target->anims[target->anim_id].speed)
+        {
+            target->frame_id++;
+            target->anims[target->anim_id].dt_accumulator = 0;
+        }
         if(target->frame_id > target->anims[target->anim_id].frame_count)
         {
             if(!target->anims[target->anim_id].loop)
