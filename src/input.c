@@ -47,32 +47,18 @@ SDL_Scancode scancode_from_gi(const char *input_name, Game_Input *inputs, int le
 int get_input_down(const char *input_name)
 {
     SDL_Scancode sc = scancode_from_gi(input_name, game_inputs, number_of_game_inputs);
-    if(sc != NULL)
-    {
-        return input_get_key_down(sc);
-    }
-    printf("Error: input not found");
-    return 0;
+    return input_get_key_down(sc);
 }
 
 int get_input(const char *input_name)
 {
     SDL_Scancode sc = scancode_from_gi(input_name, game_inputs, number_of_game_inputs);
-    if(sc != NULL)
-    {
-        return input_get_key(sc);
-    }
-    printf("Error: input not found");
-    return 0;
+    printf(input_name);
+    return input_get_key(sc);
 }
 
 int get_input_up(const char *input_name)
 {
     SDL_Scancode sc = scancode_from_gi(input_name, game_inputs, number_of_game_inputs);
-    if(sc != NULL)
-    {
-        return input_get_key_up(sc);
-    }
-    printf("Error: input not found");
-    return 0;
+    return input_get_key_up(sc);
 }

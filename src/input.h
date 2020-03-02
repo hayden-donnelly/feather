@@ -13,7 +13,7 @@ int input_get_key_up(SDL_Scancode scancode);
 typedef struct
 {
     SDL_Scancode scancode;
-    char input_name[20];
+    char *input_name;
 } Game_Input;
 Game_Input *game_inputs;
 int number_of_game_inputs;

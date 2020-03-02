@@ -12,6 +12,7 @@ void game_init(void)
     components->position = init_component_type(MAX_ENTITIES);
     components->anim_controller = init_component_type(MAX_ENTITIES);
 
+    // Random components
     Health *health = malloc(sizeof(Health));
     health->enitity_id = 30;
     health->hp = 20;
@@ -75,11 +76,34 @@ void game_init(void)
     anim_controller1->anims[0] = anim1;
 
     add_component(&components->anim_controller, anim_controller1, 30);
+
+    // Input 
+    number_of_game_inputs = 2;
+    game_inputs = malloc(sizeof(Game_Input)*2);
+
+    Game_Input input1;
+    input1.scancode = SDL_SCANCODE_SPACE;
+    input1.input_name = "jump";
+    game_inputs[1] = input1;
+
+    Game_Input input2;
+    input2.scancode = SDL_SCANCODE_D;
+    input2.input_name = "left";
+    game_inputs[0] = input2;
 }
 
 void game_update(void)
 {
     update_anim(&components->anim_controller);
+    
+    if(get_input_down("jump"))
+    {
+        printf("jump input\n");
+    }
+    if(get_input_down("left"))
+    {
+        printf("left input\n");
+    }
 }
 
 void game_cleanup(void)
