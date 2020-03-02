@@ -31,10 +31,17 @@ void render_anim(Component_Type *cmp_type, Component_Type *pos)
     {
         Anim_Controller *target = cmp_type->data[i];
         Position *target_pos = get_component(pos, target->entity_id);
+        int x = 0;
+        int y = 0;
+        if(target_pos)
+        {
+            x = target_pos->x;
+            y = target_pos->y;
+        }
         // TODO: hacky solution
         int *tile_ids = malloc(sizeof(int));
         tile_ids[0] = target->frame_id;
-        render_sprite(target->sprite, tile_ids, 1, 1, target_pos->x, target_pos->y);
+        render_sprite(target->sprite, tile_ids, 1, 1, y, y);
         free(tile_ids);
     }
 }

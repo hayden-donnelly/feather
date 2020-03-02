@@ -11,6 +11,7 @@ void game_init(void)
     components->health = init_component_type(MAX_ENTITIES);
     components->position = init_component_type(MAX_ENTITIES);
     components->anim_controller = init_component_type(MAX_ENTITIES);
+    components->tilemap = init_component_type(1);
 
     // Random components
     Health *health = malloc(sizeof(Health));
@@ -83,6 +84,27 @@ void game_init(void)
 
     add_component(&components->anim_controller, anim_controller1, 30);
 
+    // Tilemap
+    Tilemap *tilemap1 = malloc(sizeof(Tilemap));
+    tilemap1->sprite_ids = malloc(sizeof(int)*400);
+    for(int i = 0; i < 400; i++)
+    {
+        tilemap1->sprite_ids[i] = 2;
+    }
+    tilemap1->map_width = 20;
+    tilemap1->map_height = 20;
+    tilemap1->entity_id = 500;
+    tilemap1->sprite = malloc(sizeof(Sprite));
+    tilemap1->sprite->number_of_tiles_horizontal = 4;
+    tilemap1->sprite->number_of_tiles_vertical = 4;
+    tilemap1->sprite->tile_width = 16;
+    tilemap1->sprite->tile_height = 16;
+    tilemap1->sprite->tex = IMG_LoadTexture(renderer, "assets/16x16_bricks.png");
+    tilemap1->sprite->dst = draw_rect;
+    tilemap1->sprite->src = draw_rect;
+
+    add_component(&components->tilemap, tilemap1, 500);
+
     // Input 
     number_of_game_inputs = 4;
     game_inputs = malloc(sizeof(Game_Input)*4);
@@ -139,5 +161,6 @@ void game_cleanup(void)
 
 void game_render(void)
 {
+    render_tilemap(&components->tilemap, &components->position);
     render_anim(&components->anim_controller, &components->position);
 }

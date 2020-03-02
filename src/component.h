@@ -13,6 +13,7 @@ typedef struct
     Component_Type health;
     Component_Type position;
     Component_Type anim_controller;
+    Component_Type tilemap;
 } Components;
 
 Components *components;
@@ -25,3 +26,4 @@ void *get_component(Component_Type *component_type, int entity_id);
 #include "modules/health.h"
 #include "modules/position.h"
 #include "modules/rendering/animation.h"
+#include "modules/rendering/tilemap.h"

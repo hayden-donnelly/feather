@@ -10,6 +10,10 @@ Component_Type init_component_type(int length)
     new_component.hashmap = (int*)malloc(sizeof(int) * length);
     new_component.length = length;
     new_component.real_length = 0;
+    for(int i = 0; i < length; i++)
+    {
+         new_component.hashmap[i] = -1;
+    }
     return new_component;
 }
 
@@ -32,12 +36,12 @@ void remove_component(Component_Type *component_type, int entity_id)
 void *get_component(Component_Type *component_type, int entity_id)
 {
     int hash_result = hash(entity_id, component_type->length);
-    if(hash_result == -1)
+    if(component_type->hashmap[hash_result] == -1)
     {
         return NULL;
     }
     else
     {
-        return component_type->data[component_type->hashmap[hash(entity_id, component_type->length)]];
+        return component_type->data[component_type->hashmap[hash_result]];
     }
 }
