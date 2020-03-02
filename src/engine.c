@@ -8,7 +8,7 @@ static double timer_dt;
 static double timer_fixed_dt;
 static double timer_accumulator;
 
-static void eventsss(SDL_Event event)
+static void events(SDL_Event event)
 {
     // Handle all events, making sure previous and current input states are updated properly
     memcpy(input_previous_keyboard_state, input_current_keyboard_state, 512);
@@ -46,7 +46,7 @@ void loop(void)
 
         while (timer_accumulator >= timer_fixed_dt)
         {
-            eventsss(event);
+            events(event);
             game_update();
             timer_accumulator -= timer_fixed_dt;
         }
