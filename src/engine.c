@@ -35,7 +35,6 @@ static void render(void)
 
 void loop(void)
 {
-
     SDL_Event event;
     running = 1;
     while(running)

@@ -1,4 +1,6 @@
 #pragma once
+#include "box_collider.h"
+#include "../../component.h"
 
 typedef struct
 {
