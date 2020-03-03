@@ -41,7 +41,7 @@ void render_anim(Component_Type *cmp_type, Component_Type *pos)
         // TODO: hacky solution
         int *tile_ids = malloc(sizeof(int));
         tile_ids[0] = target->frame_id;
-        render_sprite(target->sprite, tile_ids, 1, 1, y, y);
+        render_sprite(target->sprite, tile_ids, 1, 1, x, y);
         free(tile_ids);
     }
 }

@@ -136,21 +136,24 @@ void game_update(void)
     
     Position *player_pos = get_component(&components->position, 30);
 
-    if(get_input("left"))
+    if(player_pos)
     {
-        player_pos->x += 1;
-    }
-    else if(get_input("right"))
-    {
-        player_pos->x -= 1;
-    }
-    else if(get_input("up"))
-    {
-        player_pos->y -= 1;
-    }
-    else if(get_input("down"))
-    {
-        player_pos->y += 1;
+        if(get_input("left"))
+        {
+            player_pos->x += 1;
+        }
+        else if(get_input("right"))
+        {
+            player_pos->x -= 1;
+        }
+        else if(get_input("up"))
+        {
+            player_pos->y -= 1;
+        }
+        else if(get_input("down"))
+        {
+            player_pos->y += 1;
+        }
     }
 }
 
