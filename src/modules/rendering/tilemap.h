@@ -8,7 +8,6 @@ typedef struct
     unsigned int map_width;
     unsigned int map_height;
     int *sprite_ids;
-    int *collision_ids;
     Sprite *sprite;
 } Tilemap;
 
