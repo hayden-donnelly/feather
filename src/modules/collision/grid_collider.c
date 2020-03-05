@@ -1,25 +1,46 @@
+#include <stdlib.h>
 #include "grid_collider.h"
 
-int grid_collision(Component_Type *cmp_type, Box_Collider *bc, int move_x, int move_y)
+int grid_collision(Component_Type *grid_collider, Component_Type *position, 
+                    Box_Collider *box_collider, int move_x, int move_y)
 {
-    for(int i = 0; i < cmp_type->real_length; i++)
+    for(int i = 0; i < grid_collider->real_length; i++)
     {
-        Grid_Collider *target = cmp_type->data[i];
+        Grid_Collider *target = grid_collider->data[i];
+        Position *position = get_component(&position, target->entity_id);
         int move_sign_x = (int)copysign(1, move_x);
         int move_sign_y = (int)copysign(1, move_y);
 
-        int col_grid_pos1_x;
-        int col_grid_pos1_y;
-        int col_grid_pos2_x;
-        int col_grid_pos2_y;
-        int modified_move_x;
-        int modified_move_y;
-
+        int col_grid_pos_left;
+        int col_grid_pos_top;
+        int col_grid_pos_right;
+        int col_grid_pos_bottom;
+        int iterative_move_x;
+        int iterative_move_y;
         int collision_done;
 
-        // Need to rewrite the commented function below so that it
-        // checks collision on both axis in every iteration instead of seperately
-        //while((modified_move_x < move_x || modified_move_y < move_y) && )
+        while(!collision_done)
+        {
+            if(abs(iterative_move_x) < abs(move_x))
+            {
+                iterative_move_x += move_sign_x;
+                col_grid_pos_left = (position->x + box_collider->x + iterative_move_x) / target->cell_width;
+                col_grid_pos_right = (position->x + box_collider->x + box_collider->w + iterative_move_x) / target->cell_width;
+                col_grid_pos_top = (position->y + box_collider->y + iterative_move_y) / target->cell_height;
+                col_grid_pos_bottom = (position->y + box_collider->y + + box_collider->h + iterative_move_y) / target->cell_height;
+                
+
+            }
+
+            if(abs(iterative_move_y) < abs(move_y))
+            {
+                iterative_move_y += move_sign_y;
+                col_grid_pos_left = (position->x + box_collider->x + iterative_move_x) / target->cell_width;
+                col_grid_pos_right = (position->x + box_collider->x + box_collider->w + iterative_move_x) / target->cell_width;
+                col_grid_pos_top = (position->y + box_collider->y + iterative_move_y) / target->cell_height;
+                col_grid_pos_bottom = (position->y + box_collider->y + + box_collider->h + iterative_move_y) / target->cell_height;
+            }
+        }
     }
     return 0;
 }
