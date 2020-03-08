@@ -79,7 +79,7 @@ void game_init(void)
     anim1.tile_ids[4] = 5;
     anim1.tile_ids[5] = 6;
     anim1.loop = 1;
-    anim1.speed = 0.3f;
+    anim1.speed = 1.5f;
     anim_controller1->anims[0] = anim1;
 
     add_component(&components->anim_controller, anim_controller1, 30);
