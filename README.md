@@ -1,3 +1,5 @@
+Note: collision is currently broke so it has temporarily been disabled in the demo.
+
 ## About
 
 Feather Engine is a lightweight 2D game engine. 
