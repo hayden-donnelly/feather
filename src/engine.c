@@ -60,8 +60,8 @@ int engine_init(void)
 {
     int window_width = 1280;
     int window_height = 720;
-    int target_render_width = 160;
-    int target_render_height = 160;
+    int target_render_width = 256;
+    int target_render_height = 144;
 
     // Init SDL
     if(SDL_Init(SDL_INIT_EVERYTHING) == -1) 

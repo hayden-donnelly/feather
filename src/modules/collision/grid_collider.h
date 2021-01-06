@@ -1,5 +1,5 @@
 #pragma once
-#include "box_collider.h"
+//#include "box_collider.h"
 #include "../../component.h"
 #include "collision_info.h"
 

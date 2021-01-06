@@ -1,9 +1,29 @@
 #include <stdio.h>
 #include "engine.h"
 #include "component.h"
+#include "modules/collision/grid_collider.h"
 #include <SDL2/SDL_image.h>
 
 #define MAX_ENTITIES 500
+
+// This file is used for testing all different parts of the engine so it's very messy right now
+
+Box_Collider *bc;
+int t_id[] = {  21, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 23, 
+                24,  1,  1,  1,  1,  1,  3,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                24,  1,  3,  1,  1,  1,  1,  1,  1,  1,  3,  1,  1,  1,  3,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                24,  1,  1,  1,  1,  1, 12, 13, 13, 13, 13, 13, 14,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                24,  1,  1,  1, 12, 28, 29,  2,  2,  2,  2,  2, 17,  3,  1,  1,  3,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                24,  1,  1,  3, 15,  2,  2,  2,  2,  2,  2,  2, 17,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                24,  3,  1,  1, 15,  2,  2,  2,  2,  2,  2,  2, 27, 13, 14,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                24,  1,  1,  1, 15,  2,  2,  2,  2,  2,  2,  2,  2,  2, 17,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                24,  1,  3,  1, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                24,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                24,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                24,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                24,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                24,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 26, 
+                };
 
 void game_init(void)
 {
@@ -12,6 +32,13 @@ void game_init(void)
     components->position = init_component_type(MAX_ENTITIES);
     components->anim_controller = init_component_type(MAX_ENTITIES);
     components->tilemap = init_component_type(1);
+    components->grid_collider = init_component_type(1);
+
+    // Player box collider - need to add to component array
+    bc = malloc(sizeof(Box_Collider));
+    bc->entity_id = 500;
+    bc->w = 16;
+    bc->h = 16;
 
     // Random components
     Health *health = malloc(sizeof(Health));
@@ -70,14 +97,14 @@ void game_init(void)
     anim_controller1->default_anim_id = 0;
 
     Anim anim1;  
-    anim1.frame_count = 6;
-    anim1.tile_ids = malloc(sizeof(int)*6);
+    anim1.frame_count = 2;
+    anim1.tile_ids = malloc(sizeof(int)*2);
     anim1.tile_ids[0] = 1;
     anim1.tile_ids[1] = 2;
-    anim1.tile_ids[2] = 3;
+    /*anim1.tile_ids[2] = 3;
     anim1.tile_ids[3] = 4;
     anim1.tile_ids[4] = 5;
-    anim1.tile_ids[5] = 6;
+    anim1.tile_ids[5] = 6;*/
     anim1.loop = 1;
     anim1.speed = 1.5f;
     anim_controller1->anims[0] = anim1;
@@ -86,24 +113,55 @@ void game_init(void)
 
     // Tilemap
     Tilemap *tilemap1 = malloc(sizeof(Tilemap));
-    tilemap1->sprite_ids = malloc(sizeof(int)*400);
-    for(int i = 0; i < 400; i++)
-    {
-        tilemap1->sprite_ids[i] = 2;
-    }
-    tilemap1->map_width = 20;
-    tilemap1->map_height = 20;
+    //tilemap1->sprite_ids = malloc(sizeof(int)*2500);
+    tilemap1->sprite_ids = &t_id;
+    tilemap1->map_width = 50;
+    tilemap1->map_height = 15;
     tilemap1->entity_id = 500;
     tilemap1->sprite = malloc(sizeof(Sprite));
-    tilemap1->sprite->number_of_tiles_horizontal = 4;
+    tilemap1->sprite->number_of_tiles_horizontal = 3;
     tilemap1->sprite->number_of_tiles_vertical = 4;
     tilemap1->sprite->tile_width = 16;
     tilemap1->sprite->tile_height = 16;
-    tilemap1->sprite->tex = IMG_LoadTexture(renderer, "assets/16x16_bricks.png");
+    tilemap1->sprite->tex = IMG_LoadTexture(renderer, "assets/tiles.png");
     tilemap1->sprite->dst = draw_rect;
     tilemap1->sprite->src = draw_rect;
 
     add_component(&components->tilemap, tilemap1, 500);
+
+    // Grid Collider
+    Grid_Collider *grid_col = malloc(sizeof(Grid_Collider));
+    grid_col->entity_id = 500;
+    grid_col->grid_width = 20;
+    grid_col->grid_height = 20;
+    grid_col->cell_width = 16;
+    grid_col->cell_height = 16;
+    grid_col->collision_ids = malloc(sizeof(int)*400);
+    for(int i = 0; i < 400; i++)
+    {
+        /*if(i < 20)
+        {
+            grid_col->collision_ids[i] = 1;
+        }
+        else if(i > 380)
+        {
+            grid_col->collision_ids[i] = 1;
+        }
+        else
+        {
+            grid_col->collision_ids[i] = 0;
+        }*/
+
+        grid_col->collision_ids[i] = 0;
+    }
+    add_component(&components->grid_collider, grid_col, 500);
+
+    // Grid Collider Position
+    Position *grid_col_pos = malloc(sizeof(Position));
+    grid_col_pos->entity_id = 500;
+    grid_col_pos->x = 0;
+    grid_col_pos->y = 0;
+    add_component(&components->position, grid_col_pos, 500);
 
     // Input 
     number_of_game_inputs = 4;
@@ -135,26 +193,35 @@ void game_update(void)
     update_anim(&components->anim_controller);
     
     Position *player_pos = get_component(&components->position, 30);
+    bc->x = player_pos->x;
+    bc->y = player_pos->y;
+
+    int move_x = 0;
+    int move_y = 0;
 
     if(player_pos)
     {
         if(get_input("left"))
         {
-            player_pos->x += 1;
+            move_x += 1;
         }
         else if(get_input("right"))
         {
-            player_pos->x -= 1;
+            move_x -= 1;
         }
         else if(get_input("up"))
         {
-            player_pos->y -= 1;
+            move_y -= 1;
         }
         else if(get_input("down"))
         {
-            player_pos->y += 1;
+            move_y += 1;
         }
     }
+
+    Collision_Info col_info = grid_collision(&components->grid_collider, &components->position, bc, move_x, move_y);
+    player_pos->x += col_info.modified_move_x;
+    player_pos->y += col_info.modified_move_y;
 }
 
 void game_cleanup(void)

@@ -1,0 +1,158 @@
+    int move_sign_x = (int)copysign(1, move_x);
+    int move_sign_y = (int)copysign(1, move_y);
+
+    // TODO: implement collided ids from collision info struct
+    Collision_Info collision_info;
+
+    for(int i = 0; i < grid_collider->real_length; i++)
+    {
+        Grid_Collider *target = grid_collider->data[i];
+        Position *target_pos = get_component(position, target->entity_id);
+
+        int iterative_move_x = 0;
+        int iterative_move_y = 0;
+
+        int collision_x_done;
+        int collision_y_done;
+        // Which cell on the grid each of the box collider's
+        // corners fall into.
+        int col_grid_pos_left;
+        int col_grid_pos_top;
+        int col_grid_pos_right;
+        int col_grid_pos_bottom;
+        // I don't really need these rn but I'm leaving them in
+        // for when I implement the full collision system.
+        // ID corresponding to collider grid position.
+        int top_left_id;
+        int top_right_id;
+        int bottom_left_id;
+        int bottom_right_id;
+
+        while(!collision_x_done && !collision_y_done)
+        {
+            if(abs(iterative_move_x) < abs(move_x) && !collision_x_done)
+            {
+                iterative_move_x += move_sign_x;
+                col_grid_pos_left = (target_pos->x + box_collider->x + iterative_move_x) / target->cell_width;
+                col_grid_pos_right = (target_pos->x + box_collider->x + box_collider->w + iterative_move_x) / target->cell_width;
+                col_grid_pos_top = (target_pos->y + box_collider->y + iterative_move_y) / target->cell_height;
+                col_grid_pos_bottom = (target_pos->y + box_collider->y + + box_collider->h + iterative_move_y) / target->cell_height;
+
+                if(move_sign_x < 0)
+                {
+                    top_left_id = target->collision_ids[col_grid_pos_top * target->grid_width + col_grid_pos_left];
+                    bottom_left_id = target->collision_ids[col_grid_pos_bottom * target->grid_width + col_grid_pos_left];
+                    
+                    if(top_left_id != 0 || bottom_left_id != 0)
+                    {
+                        iterative_move_x -= move_sign_x;
+                        move_x = iterative_move_x;
+                        collision_x_done = 1;
+                    }
+
+                }
+                else if(move_sign_x > 0)
+                {
+                    top_right_id = target->collision_ids[col_grid_pos_top * target->grid_width + col_grid_pos_right];
+                    bottom_right_id = target->collision_ids[col_grid_pos_bottom * target->grid_width + col_grid_pos_right];
+
+                    if(top_right_id != 0 || bottom_right_id != 0)
+                    {
+                        iterative_move_x -= move_sign_x;
+                        move_x = iterative_move_x;
+                        collision_x_done = 1;
+                    }
+                }
+            }
+
+            if(abs(iterative_move_y) < abs(move_y) && !collision_y_done)
+            {
+                iterative_move_y += move_sign_y;
+                col_grid_pos_left = (target_pos->x + box_collider->x + iterative_move_x) / target->cell_width;
+                col_grid_pos_right = (target_pos->x + box_collider->x + box_collider->w + iterative_move_x) / target->cell_width;
+                col_grid_pos_top = (target_pos->y + box_collider->y + iterative_move_y) / target->cell_height;
+                col_grid_pos_bottom = (target_pos->y + box_collider->y + + box_collider->h + iterative_move_y) / target->cell_height;
+
+                if(move_sign_y < 0)
+                {
+                    top_left_id = target->collision_ids[col_grid_pos_top * target->grid_width + col_grid_pos_left];
+                    top_right_id = target->collision_ids[col_grid_pos_top * target->grid_width + col_grid_pos_right];
+                
+                    if(top_left_id != 0 || top_right_id != 0)
+                    {
+                        iterative_move_y -= move_sign_y;
+                        move_y = iterative_move_y;
+                        collision_y_done = 1;
+                    }
+                }
+                else if(move_sign_y > 0)
+                {
+                    bottom_left_id = target->collision_ids[col_grid_pos_bottom * target->grid_width + col_grid_pos_left];
+                    bottom_right_id = target->collision_ids[col_grid_pos_bottom * target->grid_width + col_grid_pos_right];
+
+                    if(bottom_left_id != 0 || bottom_right_id != 0)
+                    {
+                        iterative_move_y -= move_sign_y;
+                        move_y = iterative_move_y;
+                        collision_y_done = 1;
+                    }
+                }
+            }
+        }
+    }
+
+    collision_info.modified_move_x = move_x;
+    collision_info.modified_move_y = move_y;
+    return collision_info;
+
+    // Solution 2
+
+    // TODO: implement collided ids from collision info struct
+    Collision_Info collision_info;
+
+    int move_sign_x = (int)copysign(1, move_x);
+    int move_sign_y = (int)copysign(1, move_y);
+    int abs_move_x = abs(move_x);
+    int abs_move_y = abs(move_y);
+    
+    int move_step_x = 0;
+    int move_step_y = 0;
+    if(abs_move_x > abs_move_y && abs_move_y != 0)
+    {
+        move_step_x = (abs_move_x + abs_move_y - 1) / abs_move_x;
+        move_step_y 
+    }
+    move_step_x = (abs_move_x > abs_move_y && abs_move_y != 0) ? (abs_move_x + abs_move_y - 1) / abs_move_x : 1;
+    move_step_y = (abs_move_y > abs_move_x && abs_move_x != 0) ? (abs_move_y + abs_move_x - 1) / abs_move_y : 1;
+    int max_move_steps = (move_step_x > move_step_y) ? --abs_move_x : --abs_move_y;
+    int offset_x = (move_sign_x > 0) ? box_collider->x + box_collider->w : box_collider->x;
+    int offset_y = (move_sign_y < 0) ? box_collider->y + box_collider->h : box_collider->y;
+
+    for(int i = 0; i < grid_collider->real_length; i++)
+    {
+        Grid_Collider *target = grid_collider->data[i];
+        Position *target_pos = get_component(position, target->entity_id);
+
+        for(int k = 0; k < max_move_steps; k++)
+        {
+            int col_id_1;
+            int col_id_2;
+            for(int x = 0; x < move_step_x; x++)
+            {
+                col_id_1 = target->collision_ids[(box_collider->y - target_pos->y) / target->cell_height * target->grid_width
+                                                        + (offset_x - target_pos->x) / target->cell_width];
+                col_id_2 = target->collision_ids[(box_collider->y + box_collider->h - target_pos->y) / target->cell_height * target->grid_width
+                                                        + (offset_x - target_pos->x) / target->cell_width];
+                if(target->collision_ids[col_id_1] != 0 || target->collision_ids[col_id_2] != 0)
+                {
+                }
+            }
+            for(int y = 0; y < move_step_y; y++)
+            {
+                col_id_1 = target->collision_ids[(offset_y - target_pos->y) / target->cell_height * target->grid_width
+                                                        + (box_collider->x - target_pos->x) / target->cell_width];
+                col_id_2 = target->collision_ids[(offset_y - target_pos->y) / target->cell_height * target->grid_width
+                                                        + (box_collider->x + box_collider->w - target_pos->x) / target->cell_width];
+            }
+        }
+    }
