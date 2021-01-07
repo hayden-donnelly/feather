@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "game.h"
 
+// Article which explains time steps: https://gafferongames.com/post/fix_your_timestep/
 static double timer_last;
 static double timer_now;
 static double timer_dt;
@@ -35,14 +36,15 @@ static void render(void)
 
 void loop(void)
 {
+    timer_now = SDL_GetTicks();
     SDL_Event event;
     running = 1;
     while(running)
     {
         printf("%s", SDL_GetError());
         timer_last = timer_now;
-        timer_now = SDL_GetPerformanceCounter();
-        timer_dt = ((timer_now - timer_last)/(double)SDL_GetPerformanceFrequency());
+        timer_now = SDL_GetTicks();
+        timer_dt = (timer_now - timer_last)/1000;
         timer_accumulator += timer_dt;
 
         while (timer_accumulator >= timer_fixed_dt)
@@ -58,8 +60,8 @@ void loop(void)
 
 int engine_init(void)
 {
-    int window_width = 1920;
-    int window_height = 1080;
+    int window_width = 2560;
+    int window_height = 1440;
     int target_render_width = 256;
     int target_render_height = 144;
 
@@ -94,10 +96,10 @@ int engine_init(void)
     input_keyboard_state_pointer = SDL_GetKeyboardState(NULL);
 
     // Init timer
-    timer_now = SDL_GetPerformanceCounter();
+    timer_now = SDL_GetTicks();
     timer_last = 0;
     timer_dt = 0;
-    timer_fixed_dt = 1.0/59.9;
+    timer_fixed_dt = 1.0/60;
     timer_accumulator = 0;
 
     return 0;
