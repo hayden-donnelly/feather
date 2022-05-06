@@ -1,4 +1,4 @@
-Note: collision is currently broken so it has temporarily been disabled in the demo.
+Note: collision is currently broken so it has been temporarily disabled.
 
 ## About
 
