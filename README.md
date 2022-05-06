@@ -8,7 +8,7 @@ It was born out of my frustration with existing game engines. I wanted to make s
 ## Dependencies
 
 * SDL2
-* SDL2_Image
+* SDL2_image
 * SDL2_ttf
 
 ## Compilation and Execution
