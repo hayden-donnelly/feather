@@ -8,11 +8,9 @@ It was born out of my frustration with existing game engines. I wanted to make s
 ## Compilation and Execution
 
 To compile:
-
 `make all`
 
 To execute:
-
 `make run`
 
 ## Screenshots
