@@ -80,14 +80,14 @@ Collision_Info grid_collision(Component_Type *grid_collider, Component_Type *pos
                 }
                 else
                 {
-                    farthest_move_x += grid_collider.cell_width;
+                    farthest_move_x += grid_collider->cell_width;
                 }
             }
         }
     }
 
     // Will develop this once the general logic has been laid out for rightward movement.
-    else if(move_x < 0)
+    /*else if(move_x < 0)
     {
         // Horizontal move within cell. No possibility for collision.
         if(move_y <= calc_left_delta(position->x, grid_collider))
@@ -98,7 +98,7 @@ Collision_Info grid_collision(Component_Type *grid_collider, Component_Type *pos
         {
             hor_check_quantity = calc_hor_check_quantity(move_x, right_delta, grid_collider);
         }
-    }
+    }*/
 
     // Only use the smallest potential move because it is the one which stops at the first collisions.
     if(sqrt((double)(pow(potential_move_x_1, 2) + pow(potential_move_y_1, 2)))
