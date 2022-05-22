@@ -6,7 +6,9 @@
 typedef struct
 {
     int entity_id;
+    // Width of the grid in cells.
     unsigned int grid_width;
+    // Height of the grid in cells.
     unsigned int grid_height;
     unsigned int cell_width;
     unsigned int cell_height;
