@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "grid_collider.h"
 
 // Determine which grid cell a set of coordinates are in.
@@ -29,9 +30,16 @@ int calc_hor_check_quantity(int move_x, int delta, Grid_Collider * grid_collider
     return (int)floor((move_x - delta) / grid_collider->cell_width);
 }
 
-Collision_Info grid_collision(Component_Type *grid_collider, Component_Type *position, 
+Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type *position_type, 
                                 Box_Collider *box_collider, int move_x, int move_y)
 {
+    // It's kind of weird how component types are passed into this function.
+    // Why not just grab them straight from the components struct?
+
+    Grid_Collider *grid_collider = grid_collider_type->data[0];
+    // Player position. Change later to remove hardcode.
+    Position *position = get_component(position_type, 32);
+
     Collision_Info collision_info;
     collision_info.modified_move_x = 0;
     collision_info.modified_move_y = 0;
@@ -49,9 +57,11 @@ Collision_Info grid_collision(Component_Type *grid_collider, Component_Type *pos
 
     // This algorithm is gonna be sexy :)
 
+    printf("1\n");
     // Rightward movement.
     if(move_x > 0)
     {
+        printf("2\n");
         int right_delta = calc_right_delta(position->x, grid_collider);
         // Horizontal move within cell. No possibility for collision.
         if(move_x <= right_delta)
@@ -71,7 +81,7 @@ Collision_Info grid_collision(Component_Type *grid_collider, Component_Type *pos
                 int current_y = position->y + current_y_movement;
                 int grid_cell_id = pos_to_grid_cell_id(position->x + farthest_move_x, current_y, grid_collider);
 
-                if(grid_collider.collision_ids[grid_cell_id] == 1)
+                if(grid_collider->collision_ids[grid_cell_id] == 1)
                 {
                     // A collision has been detected.
                     potential_move_x_1 = farthest_move_x - 1;

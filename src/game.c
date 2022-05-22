@@ -283,9 +283,9 @@ void game_update(void)
         }
     }
 
-    //Collision_Info col_info = grid_collision(&components->grid_collider, &components->position, bc, move_x, move_y);
-    //player_pos->x += col_info.modified_move_x;
-    //player_pos->y += col_info.modified_move_y;
+    Collision_Info col_info = grid_collision(&components->grid_collider, &components->position, bc, move_x, move_y);
+    player_pos->x += col_info.modified_move_x;
+    player_pos->y += col_info.modified_move_y;
     player_pos->x -= move_x;
     player_pos->y -= move_y;
 }
