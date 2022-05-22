@@ -4,29 +4,29 @@
 // Determine which grid cell a set of coordinates are in.
 int pos_to_grid_cell_id(int x, int y, Grid_Collider *grid_collider)
 {
-    int grid_x = (int)floor(x / grid_collider.cell_width);
-    int grid_y = (int)floor(y / grid_collider.cell_height);
-    return grid_y * grid_collider.grid_width + grid_x;
+    int grid_x = (int)floor(x / grid_collider->cell_width);
+    int grid_y = (int)floor(y / grid_collider->cell_height);
+    return grid_y * grid_collider->grid_width + grid_x;
 }
 
 // Difference between some x coordinate and the nearest rightward vertical grid line.
 int calc_right_delta(int x, Grid_Collider *grid_collider)
 {
-    int right = (int)floor(x / grid_collider.grid_width + 1) * grid_collider->cell_width;
+    int right = (int)floor(x / grid_collider->grid_width + 1) * grid_collider->cell_width;
     return right - x;
 }
 
 // Difference between sme x coordinate and the nearest leftward vertical grid line.
 int calc_left_delta(int x, Grid_Collider *grid_collider)
 {
-    int left = (int)floor(x / grid_collider.grid_width) * grid_collider.cell_width;
+    int left = (int)floor(x / grid_collider->grid_width) * grid_collider->cell_width;
     return x - left;
 }
 
 // Number of horizontal collision checks required.
 int calc_hor_check_quantity(int move_x, int delta, Grid_Collider * grid_collider)
 {
-    return (int)floor((move_x - delta) / grid_collider.cell_width);
+    return (int)floor((move_x - delta) / grid_collider->cell_width);
 }
 
 Collision_Info grid_collision(Component_Type *grid_collider, Component_Type *position, 
