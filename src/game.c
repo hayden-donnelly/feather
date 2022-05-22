@@ -178,7 +178,7 @@ void game_init(void)
 
     // Tilemap
     Tilemap *tilemap1 = malloc(sizeof(Tilemap));
-    tilemap1->sprite_ids = &map1;
+    tilemap1->sprite_ids = (int*)&map1;
     tilemap1->map_width = 50;
     tilemap1->map_height = 21;
     tilemap1->entity_id = 500;

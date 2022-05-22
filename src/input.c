@@ -10,7 +10,7 @@ int input_get_key_down(SDL_Scancode scancode)
     return 0;
 }
 
-// Returns true of key is pressed
+// Returns true if key is pressed
 int input_get_key(SDL_Scancode scancode)
 {
     if(input_current_keyboard_state[scancode])
@@ -41,7 +41,10 @@ SDL_Scancode scancode_from_gi(const char *input_name, Game_Input *inputs, int le
             return inputs[i].scancode;
         }
     }
-    return NULL;
+    // Can't return NULL, so return period since it is unlikely
+    // to be used for gameplay.
+    return SDL_SCANCODE_PERIOD;
+    //return NULL;
 }   
 
 int get_input_down(const char *input_name)
