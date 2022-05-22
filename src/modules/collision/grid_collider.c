@@ -9,26 +9,10 @@ int pos_to_grid_cell_id(int x, int y, Grid_Collider *grid_collider)
     return grid_y * grid_collider.grid_width + grid_x;
 }
 
-// Deprecated, will delete soon.
-int calculate_deltas(int x, int y, Grid_Collider *grid_collider)
-{
-    int above = (int)floor(y / grid_collider.grid_height) * grid_collider.cell_height;
-    int above_delta = y - above;
-
-    int below = (int)floor(y / grid_collider.grid_height + 1) * grid_collider.cell_height;
-    int below_delta = below - y;
-
-    int right = (int)floor(x / grid_collider.grid_width + 1) * grid_collider.cell_width;
-    int right_delta = right - x;
-
-    int left = (int)floor(x / grid_collider.grid_width) * grid_collider.cell_width;
-    int left_delta = x - left;
-}
-
 // Difference between some x coordinate and the nearest rightward vertical grid line.
 int calc_right_delta(int x, Grid_Collider *grid_collider)
 {
-    int right = (int)floor(x / grid_collider.grid_width + 1) * grid_collider.cell_width;
+    int right = (int)floor(x / grid_collider.grid_width + 1) * grid_collider->cell_width;
     return right - x;
 }
 
