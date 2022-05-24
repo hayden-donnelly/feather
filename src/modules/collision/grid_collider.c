@@ -25,7 +25,7 @@ int calc_right_delta(int x, Grid_Collider *grid_collider)
     //printf("Floored: %d\n", (int)floor(x/grid_collider->grid_width+1));
     //printf("GW: %d\n", grid_collider->grid_width);
     //printf("Calc 1: %d\n", (int)((double)x/(double)grid_collider->grid_width)); // This.
-    printf("X: %d\n", x);
+    //printf("X: %d\n", x);
     return right - x;
 }
 
@@ -68,7 +68,7 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
     int ver_check_quantity = 0;
 
     //printf("1\n");
-    printf("asdasd: %d\n", calc_right_delta(position->x, grid_collider));
+    //printf("asdasd: %d\n", calc_right_delta(position->x, grid_collider));
     // Rightward movement.
     if(move_x > 0)
     {
@@ -76,15 +76,15 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
         int right_delta = calc_right_delta(position->x, grid_collider);
         // Horizontal move within cell. No possibility for collision.
         //printf("3\n");
-        printf("Right Delta: %d\n", right_delta);
-        if(abs(move_x) <= abs(right_delta))
+        //printf("Right Delta: %d\n", right_delta);
+        if(abs(move_x) < abs(right_delta))
         {
-            printf("4\n");
+            //printf("4\n");
             potential_move_x_1 = move_x;
         }
         else
         {
-            printf("5\n");
+            //printf("5\n");
             hor_check_quantity = calc_hor_check_quantity(move_x, right_delta, grid_collider);
             //printf("Hor: %d\n", hor_check_quantity);
             //printf("6\n");
@@ -94,14 +94,14 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
             farthest_move_x += right_delta + 1;
             for(int i = 0; i < hor_check_quantity; i++)
             {
-                printf("7\n");
+                //printf("7\n");
                 int current_y_movement = (int)(move_y * (farthest_move_x / move_x));
                 int current_y = position->y + current_y_movement;
                 int grid_cell_id = pos_to_grid_cell_id(position->x + farthest_move_x, current_y, grid_collider);
                 //printf("Position X: %d\n", position->x);
-                //printf("Right Delta: %d\n", right_delta);
+                printf("Right Delta: %d\n", right_delta);
                 //printf("8\n");
-                printf("Cell ID: %d\n", grid_cell_id);
+                //printf("Cell ID: %d\n", grid_cell_id);
 
                 if(grid_collider->collision_ids[grid_cell_id] == 1)
                 {
@@ -113,8 +113,9 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
                 }
                 else
                 {
-                    printf("10\n");
+                    //printf("10\n");
                     farthest_move_x += grid_collider->cell_width;
+                    potential_move_x_1 = farthest_move_x;
                 }
             }
         }
