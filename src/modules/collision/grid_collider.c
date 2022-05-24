@@ -37,8 +37,8 @@ int calc_left_delta(int x, Grid_Collider *grid_collider)
 int calc_delta(int coordinate, int cell_size, int cell_offset)
 {
     int coordinate = abs(coordinate);
-    int cell_line_coordniate = (int)floor((double)coordinate / (double)cell_size) * (cell_size + cell_offset);
-    return abs(coordinate - cell_line_coordniate);
+    int cell_line_coordinate = (int)floor((double)coordinate / (double)cell_size) * (cell_size + cell_offset);
+    return abs(coordinate - cell_line_coordinate);
 }
 
 // Number of horizontal collision checks required.
