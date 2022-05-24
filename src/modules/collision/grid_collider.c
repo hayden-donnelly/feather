@@ -73,7 +73,7 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
     if(move_x > 0)
     {
         //printf("2\n");
-        int right_delta = calc_right_delta(position->x+16, grid_collider);
+        int right_delta = calc_right_delta(position->x, grid_collider);
         // Horizontal move within cell. No possibility for collision.
         //printf("3\n");
         //printf("Right Delta: %d\n", right_delta);
@@ -99,16 +99,17 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
                 int current_y = position->y + current_y_movement;
                 int grid_cell_id = pos_to_grid_cell_id(position->x + farthest_move_x, current_y, grid_collider);
                 //printf("Position X: %d\n", position->x);
-                printf("Right Delta: %d\n", right_delta);
+                //printf("Right Delta: %d\n", right_delta);
                 //printf("8\n");
                 //printf("Cell ID: %d\n", grid_cell_id);
 
                 if(grid_collider->collision_ids[grid_cell_id] == 1)
                 {
-                    printf("9\n");
+                    printf("Collision detected.\n");
                     // A collision has been detected.
-                    potential_move_x_1 = farthest_move_x - 1;
-                    potential_move_y_1 = current_y_movement;
+                    // This needs to be fixed so that larger movements per frame aren't stopped prematurely.
+                    //potential_move_x_1 = farthest_move_x - 1;
+                    //potential_move_y_1 = current_y_movement;
                     break;
                 }
                 else
@@ -118,7 +119,7 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
                     //potential_move_x_1 = farthest_move_x;
                     if(farthest_move_x > move_x)
                     {
-                        printf("Yes\n");
+                        printf("Full movement completed with no collision.\n");
                         potential_move_x_1 = move_x;
                         break;
                     }
