@@ -73,7 +73,7 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
     if(move_x > 0)
     {
         //printf("2\n");
-        int right_delta = calc_right_delta(position->x, grid_collider);
+        int right_delta = calc_right_delta(position->x+16, grid_collider);
         // Horizontal move within cell. No possibility for collision.
         //printf("3\n");
         //printf("Right Delta: %d\n", right_delta);
@@ -115,7 +115,13 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
                 {
                     //printf("10\n");
                     farthest_move_x += grid_collider->cell_width;
-                    potential_move_x_1 = farthest_move_x;
+                    //potential_move_x_1 = farthest_move_x;
+                    if(farthest_move_x > move_x)
+                    {
+                        printf("Yes\n");
+                        potential_move_x_1 = move_x;
+                        break;
+                    }
                 }
             }
         }
