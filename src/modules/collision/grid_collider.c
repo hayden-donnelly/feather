@@ -28,6 +28,19 @@ int calc_left_delta(int x, Grid_Collider *grid_collider)
     return x - left;
 }
 
+// Calculates the difference between some coordinate and specified grid line.
+// Set coordinate = x and cell_size = cell_width to calculate distance to vertical grid line.
+// Set coordinate = y and cell_size = cell_height to calculate distance to horizontal grid line.
+// When cell_offset = 0, function will calculate the distance to the line that is to the left
+// or above coordinate. Inversely, function will calcualte distance to the line that is to the right
+// or below cordinate when cell_offset = 1.
+int calc_delta(int coordinate, int cell_size, int cell_offset)
+{
+    int coordinate = abs(coordinate);
+    int cell_line_coordniate = (int)floor((double)coordinate / (double)cell_size) * (cell_size + cell_offset);
+    return abs(coordinate - cell_line_coordniate);
+}
+
 // Number of horizontal collision checks required.
 int calc_hor_check_quantity(int move_x, int delta, Grid_Collider * grid_collider)
 {
@@ -40,6 +53,7 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
     // It's kind of weird how component types are passed into this function.
     // Why not just grab them straight from the components struct?
 
+    // TODO: iterate through all grid colliders
     Grid_Collider *grid_collider = grid_collider_type->data[0];
     // Player position. Change later to remove hardcode.
     Position *position = get_component(position_type, 32);
