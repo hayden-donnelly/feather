@@ -36,7 +36,7 @@ int calc_left_delta(int x, Grid_Collider *grid_collider)
 // or below cordinate when cell_offset = 1.
 int calc_delta(int coordinate, int cell_size, int cell_offset)
 {
-    int coordinate = abs(coordinate);
+    coordinate = abs(coordinate);
     int cell_line_coordinate = (int)floor((double)coordinate / (double)cell_size) * (cell_size + cell_offset);
     return abs(coordinate - cell_line_coordinate);
 }
@@ -76,7 +76,8 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
     // Rightward movement.
     if(move_x > 0)
     {
-        int right_delta = calc_right_delta(position->x, grid_collider);
+        //int right_delta = calc_right_delta(position->x, grid_collider);
+        int right_delta = calc_delta(position->x, grid_collider->cell_width, 1);
         // Horizontal move within cell. No possibility for collision.
         if(abs(move_x) < abs(right_delta))
         {
