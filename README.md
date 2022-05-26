@@ -3,7 +3,6 @@ Note: collision is currently broken so it has been temporarily disabled.
 ## About
 
 Feather Engine is a lightweight 2D game engine with an entity-component-system (ECS) architecture. 
-It was born out of my frustration with existing game engines. I wanted to make something with ZERO bloat, so I did.
 
 ## Dependencies
 
