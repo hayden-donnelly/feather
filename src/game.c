@@ -171,7 +171,6 @@ void game_update(void)
     player_pos->y += col_info.modified_move_y;
     //player_pos->x -= move_x;
     //player_pos->y -= move_y;
-    printf("player pos %d\n", player_pos->x);
 }
 
 void game_cleanup(void)
