@@ -27,10 +27,47 @@ int calc_delta(int coordinate, int cell_size, int cell_offset)
 }
 
 // Number of horizontal collision checks required.
-int calc_hor_check_quantity(int move_x, int delta, Grid_Collider * grid_collider)
+int calc_hor_check_quantity(int move_x, int delta, int cell_size)
 {
     // remember to fix this sign for move
-    return (int)floor((double)(abs(move_x) - abs(delta)) / (double)grid_collider->cell_width) + 1;
+    return (int)floor((double)(abs(move_x) - abs(delta)) / (double)cell_size) + 1;
+}
+
+int hor_collision(int move_x, int move_y, int pos_x, int pos_y, int cell_offset, Grid_Collider *grid_collider)
+{
+    int move_sign_x = (int)copysign(1, move_sign_x);
+    int delta = calc_delta(pos_x, grid_collider.cell_width, cell_offset)
+
+    if(abs(move_x) < delta)
+    {
+        modified_move_x = move_x;
+    }
+    else
+    {
+        int hor_check_quantity = calc_hor_check_quantity(move_x, delta, grid_collider->cell_width);
+        int modified_move_x = delta * move_sign_x;
+        for(int i = 0; i < hor_check_quantity; i++)
+        {
+            int current_move_y = (int)(move_y * abs(modified_move_x / move_x));
+            int current_pos_y = posy_y + current_move_y;
+            int grid_cell_id = pos_to_grid_cell_id(pos_x + farthest_move_x, current_pos_y, grid_collider);
+        
+            if(grid_collider->collision_ids[grid_cell_id] == 1)
+            {
+                // A collision has been detected.
+                return farthest_move_x;
+            }
+            else
+            {
+                farthest_move_x += grid_collider->cell_width * move_sign_x;
+                if(abs(farthest_move_x) > abs(move_x))
+                {
+                    // A full movement has been completed with no collision.
+                    return move_x;
+                }
+            }
+        }
+    }
 }
 
 Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type *position_type, 
