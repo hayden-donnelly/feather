@@ -12,22 +12,6 @@ int pos_to_grid_cell_id(int x, int y, Grid_Collider *grid_collider)
     return grid_y * grid_collider->grid_width + grid_x;
 }
 
-// Difference between some x coordinate and the nearest rightward vertical grid line.
-int calc_right_delta(int x, Grid_Collider *grid_collider)
-{
-    // The fact that I have to take abs here may mean there is something wrong with the coorindate system.
-    x = abs(x);
-    int right = (int)floor((double)x / (double)grid_collider->cell_width + 1) * grid_collider->cell_width;
-    return right - x;
-}
-
-// Difference between sme x coordinate and the nearest leftward vertical grid line.
-int calc_left_delta(int x, Grid_Collider *grid_collider)
-{
-    int left = (int)floor((double)x / (double)grid_collider->grid_width) * grid_collider->cell_width;
-    return x - left;
-}
-
 // Calculates the difference between some coordinate and specified grid line.
 // Set coordinate = x and cell_size = cell_width to calculate distance to vertical grid line.
 // Set coordinate = y and cell_size = cell_height to calculate distance to horizontal grid line.
@@ -45,7 +29,8 @@ int calc_delta(int coordinate, int cell_size, int cell_offset)
 // Number of horizontal collision checks required.
 int calc_hor_check_quantity(int move_x, int delta, Grid_Collider * grid_collider)
 {
-    return (int)floor((double)(move_x - delta) / (double)grid_collider->cell_width) + 1;
+    // remember to fix this sign for move
+    return (int)floor((double)(abs(move_x) - abs(delta)) / (double)grid_collider->cell_width) + 1;
 }
 
 Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type *position_type, 
@@ -74,11 +59,18 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
     int hor_check_quantity = 0;
     int ver_check_quantity = 0;
 
+    int move_sign_x = 0;
+    int move_sign_y = 0;
+
     // Rightward movement.
-    if(move_x > 0)
+    if(move_x < 0)
     {
         //int right_delta = calc_right_delta(position->x, grid_collider);
-        int right_delta = calc_delta(position->x, grid_collider->cell_width, 1);
+        int right_delta = calc_delta(position->x-16, grid_collider->cell_width, 1);
+        printf("right delta %d\n", right_delta);
+        //printf("\n\ndelta %d\n\n", calc_delta(16, 16, 0));
+        //printf("\n\ndelta %d\n\n", calc_delta(16, 16, 1));
+        
         // Horizontal move within cell. No possibility for collision.
         if(abs(move_x) < abs(right_delta))
         {
@@ -89,29 +81,30 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
             hor_check_quantity = calc_hor_check_quantity(move_x, right_delta, grid_collider);
             int farthest_move_x = 0;
             // Check for collision upon moving into first new cell and then iterate for all other cells.
-            // +1 is to push x coordinate into the next cell. I need to check if this is actually necessary.
-            farthest_move_x += right_delta + 1;
+            farthest_move_x -= right_delta;
+            //potential_move_x_1 = -farthest_move_x;
             for(int i = 0; i < hor_check_quantity; i++)
             {
                 int current_y_movement = (int)(move_y * (farthest_move_x / move_x));
                 int current_y = position->y + current_y_movement;
-                int grid_cell_id = pos_to_grid_cell_id(position->x + farthest_move_x, current_y, grid_collider);
+                int grid_cell_id = pos_to_grid_cell_id(position->x - 16 + farthest_move_x, current_y, grid_collider);
 
                 if(grid_collider->collision_ids[grid_cell_id] == 1)
                 {
-                    printf("Collision detected.\n");
+                    //printf("Collision detected.\n");
                     // A collision has been detected.
                     // This needs to be fixed so that larger movements per frame aren't stopped prematurely.
-                    //potential_move_x_1 = farthest_move_x - 1;
+                    potential_move_x_1 = farthest_move_x + 1;
                     //potential_move_y_1 = current_y_movement;
                     break;
                 }
                 else
                 {
-                    farthest_move_x += grid_collider->cell_width;
-                    if(farthest_move_x > move_x)
+                    farthest_move_x -= grid_collider->cell_width;
+                    if(abs(farthest_move_x) > abs(move_x))
                     {
-                        printf("Full movement completed with no collision.\n");
+                        // Full movement completed with no collision.
+                        //printf("Full movement completed with no collision.\n");
                         potential_move_x_1 = move_x;
                         potential_move_y_1 = current_y_movement;
                         break;
@@ -120,6 +113,52 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
             }
         }
     }
+
+    // Leftward movement.
+    if(move_x > 0)
+    {
+        //int right_delta = calc_right_delta(position->x, grid_collider);
+        int left_delta = calc_delta(position->x, grid_collider->cell_width, 0);
+        
+        // Horizontal move within cell. No possibility for collision.
+        if(abs(move_x) < abs(left_delta))
+        {
+            potential_move_x_1 = move_x;
+        }
+        else
+        {
+            hor_check_quantity = calc_hor_check_quantity(move_x, left_delta, grid_collider);
+            int farthest_move_x = 0;
+            // Check for collision upon moving into first new cell and then iterate for all other cells.
+            farthest_move_x += left_delta;
+            for(int i = 0; i < hor_check_quantity; i++)
+            {
+                int current_y_movement = (int)(move_y * (farthest_move_x / move_x));
+                int current_y = position->y + current_y_movement;
+                int grid_cell_id = pos_to_grid_cell_id(position->x + farthest_move_x + 1, current_y, grid_collider);
+
+                if(grid_collider->collision_ids[grid_cell_id] == 1)
+                {
+                    // A collision has been detected.
+                    potential_move_x_1 = farthest_move_x - 1;
+                    break;
+                }
+                else
+                {
+                    farthest_move_x += grid_collider->cell_width;
+                    if(abs(farthest_move_x) > abs(move_x))
+                    {
+                        // Full movement completed with no collision.
+                        potential_move_x_1 = move_x;
+                        potential_move_y_1 = current_y_movement;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    
 
     // Will develop this once the general logic has been laid out for rightward movement.
     /*else if(move_x < 0)

@@ -10,12 +10,12 @@
 
 Box_Collider *bc;
 
-int map4[] = {  1,  1,  1,  1,  1,  3,
-                1,  1,  1,  1,  1,  3,
-                1,  1,  1,  1,  1,  3,
-                1,  1,  1,  1,  1,  3,
-                1,  1,  1,  1,  1,  3,
-                3,  3,  3,  3,  3,  3, };
+int map4[] = {  2,  1,  1,  1,  1,  2,
+                2,  1,  1,  1,  1,  2,
+                2,  1,  1,  1,  1,  2,
+                2,  1,  1,  1,  1,  2,
+                2,  1,  1,  1,  1,  2,
+                2,  2,  2,  2,  2,  2, };
 
 void game_init(void)
 {
@@ -28,7 +28,7 @@ void game_init(void)
 
     Position *pos2 = malloc(sizeof(Position));
     pos2->entity_id = 32;
-    pos2->x = 0;
+    pos2->x = -16;
     pos2->y = 0;
     add_component(&components->position, pos2, 32);
 
@@ -115,12 +115,12 @@ void game_init(void)
     game_inputs = malloc(sizeof(Game_Input)*4);
 
     Game_Input left;
-    left.scancode = SDL_SCANCODE_D;
+    left.scancode = SDL_SCANCODE_A;
     left.input_name = "left";
     game_inputs[0] = left;
 
     Game_Input right;
-    right.scancode = SDL_SCANCODE_A;
+    right.scancode = SDL_SCANCODE_D;
     right.input_name = "right";
     game_inputs[1] = right;
 
@@ -166,11 +166,12 @@ void game_update(void)
         }
     }
 
-    Collision_Info col_info = grid_collision(&components->grid_collider, &components->position, bc, move_x, move_y);
-    player_pos->x -= col_info.modified_move_x;
+    Collision_Info col_info = grid_collision(&components->grid_collider, &components->position, bc, move_x*4, move_y);
+    player_pos->x += col_info.modified_move_x;
     player_pos->y += col_info.modified_move_y;
     //player_pos->x -= move_x;
     //player_pos->y -= move_y;
+    printf("player pos %d\n", player_pos->x);
 }
 
 void game_cleanup(void)
