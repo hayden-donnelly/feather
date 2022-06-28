@@ -41,7 +41,6 @@ int hor_collision(int move_x, int move_y, int pos_x, int pos_y, int cell_offset,
 
     if(abs(move_x) < delta)
     {
-        printf("jajaja\n");
         return move_x;
     }
     else
@@ -57,17 +56,14 @@ int hor_collision(int move_x, int move_y, int pos_x, int pos_y, int cell_offset,
             if(grid_collider->collision_ids[grid_cell_id] == 1)
             {
                 // A collision has been detected.
-                printf("\nthis\n\n\n");
                 return modified_move_x;
             }
             else
             {
                 modified_move_x += grid_collider->cell_width * move_sign_x;
-                printf("hehehehe\n");
                 if(abs(modified_move_x) > abs(move_x))
                 {
                     // A full movement has been completed with no collision.
-                    printf("A full movement has occured\n");
                     return move_x;
                 }
             }
@@ -108,13 +104,13 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
     if(move_x < 0)
     {
         top_movement = hor_collision(move_x, move_y, position->x-16-position2->x, position->y, 1, grid_collider);
-        bottom_movement = hor_collision(move_x, move_y, position->x-16, position->y+16, 1, grid_collider);
+        //bottom_movement = hor_collision(move_x, move_y, position->x-16, position->y+16, 1, grid_collider);
     }
     // Leftward movement.
     else if(move_x > 0)
     {
         top_movement = hor_collision(move_x, move_y, position->x-position2->x, position->y, 0, grid_collider);
-        bottom_movement = hor_collision(move_x, move_y, position->x, position->y+16, 0, grid_collider);
+        //bottom_movement = hor_collision(move_x, move_y, position->x, position->y+16, 0, grid_collider);
     }
 
 
