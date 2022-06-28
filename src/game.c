@@ -11,7 +11,7 @@
 Box_Collider *bc;
 
 int map4[] = {  2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
-                2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
+                1,  1,  1,  1,  1,  1,  1,  1,  1,  2,
                 2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
                 2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
                 2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
@@ -177,7 +177,7 @@ void game_update(void)
         }
     }
 
-    Collision_Info col_info = grid_collision(&components->grid_collider, &components->position, bc, move_x*4, move_y);
+    Collision_Info col_info = grid_collision(&components->grid_collider, &components->position, bc, move_x*1, move_y);
     player_pos->x += col_info.modified_move_x;
     player_pos->y += col_info.modified_move_y;
     //player_pos->x += move_x;

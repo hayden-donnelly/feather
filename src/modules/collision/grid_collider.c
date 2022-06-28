@@ -38,7 +38,7 @@ int hor_collision(int move_x, int move_y, int pos_x, int pos_y, int cell_offset,
 {
     int move_sign_x = (int)copysign(1, move_x);
     int delta = calc_delta(pos_x, grid_collider->cell_width, cell_offset);
-    //printf("delta %d\n", delta);
+    printf("delta %d\n", delta);
 
     if(abs(move_x) < delta)
     {
@@ -52,13 +52,13 @@ int hor_collision(int move_x, int move_y, int pos_x, int pos_y, int cell_offset,
         {
             int current_move_y = (int)(move_y * abs(modified_move_x / move_x));
             int current_pos_y = pos_y + current_move_y;
-            int grid_cell_id = pos_to_grid_cell_id(pos_x + modified_move_x, current_pos_y, grid_collider);
+            int grid_cell_id = pos_to_grid_cell_id(pos_x + modified_move_x - cell_offset, current_pos_y, grid_collider);
         
             if(grid_collider->collision_ids[grid_cell_id] == 1)
             {
                 // A collision has been detected.
                 printf("Collision has been detected.\n");
-                return modified_move_x;
+                return modified_move_x + cell_offset;
             }
             else
             {
@@ -105,7 +105,7 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
     if(move_x < 0)
     {
         //top_movement = hor_collision(move_x, move_y, position->x-16-position2->x, position->y, 1, grid_collider);
-        top_movement = hor_collision(move_x, move_y, position->x-position2->x-16, position->y, 0, grid_collider);
+        top_movement = hor_collision(move_x, move_y, position->x-position2->x-16, position->y, 1, grid_collider);
         //bottom_movement = hor_collision(move_x, move_y, position->x-16, position->y+16, 1, grid_collider);
     }
     // Leftward movement.
