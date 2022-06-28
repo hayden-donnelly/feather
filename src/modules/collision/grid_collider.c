@@ -87,6 +87,7 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
     Grid_Collider *grid_collider = grid_collider_type->data[0];
     // Player position. Change later to remove hardcode.
     Position *position = get_component(position_type, 32);
+    Position *position2 = get_component(position_type, 30);
 
     Collision_Info collision_info;
     collision_info.modified_move_x = 0;
@@ -106,13 +107,13 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
     // Rightward movement.
     if(move_x < 0)
     {
-        top_movement = hor_collision(move_x, move_y, position->x-16, position->y, 1, grid_collider);
+        top_movement = hor_collision(move_x, move_y, position->x-16-position2->x, position->y, 1, grid_collider);
         bottom_movement = hor_collision(move_x, move_y, position->x-16, position->y+16, 1, grid_collider);
     }
     // Leftward movement.
     else if(move_x > 0)
     {
-        top_movement = hor_collision(move_x, move_y, position->x, position->y, 0, grid_collider);
+        top_movement = hor_collision(move_x, move_y, position->x-position2->x, position->y, 0, grid_collider);
         bottom_movement = hor_collision(move_x, move_y, position->x, position->y+16, 0, grid_collider);
     }
 
