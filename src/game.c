@@ -10,12 +10,16 @@
 
 Box_Collider *bc;
 
-int map4[] = {  2,  1,  1,  1,  1,  2,
-                2,  1,  1,  1,  1,  2,
-                2,  1,  1,  1,  1,  2,
-                2,  1,  1,  1,  1,  2,
-                2,  1,  1,  1,  1,  2,
-                2,  2,  2,  2,  2,  2, };
+int map4[] = {  2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
+                2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
+                2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
+                2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
+                2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
+                2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
+                2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
+                2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
+                2,  1,  1,  1,  1,  1,  1,  1,  1,  2,
+                2,  2,  2,  2,  2,  2,  2,  2,  2,  2};
 
 void game_init(void)
 {
@@ -26,9 +30,16 @@ void game_init(void)
     components->tilemap = init_component_type(1);
     components->grid_collider = init_component_type(1);
 
+    // Required for centering player on screen.
+    Position *pos1 = malloc(sizeof(Position));
+    pos1->entity_id = 30;
+    pos1->x = 112;
+    pos1->y = 56;
+    add_component(&components->position, pos1, 30);
+
     Position *pos2 = malloc(sizeof(Position));
     pos2->entity_id = 32;
-    pos2->x = -16;
+    pos2->x = 0;
     pos2->y = 0;
     add_component(&components->position, pos2, 32);
 
@@ -75,8 +86,8 @@ void game_init(void)
     // Tilemap
     Tilemap *tilemap1 = malloc(sizeof(Tilemap));
     tilemap1->sprite_ids = (int*)&map4;
-    tilemap1->map_width = 6;
-    tilemap1->map_height = 6;
+    tilemap1->map_width = 10;
+    tilemap1->map_height = 10;
     tilemap1->entity_id = 500;
     tilemap1->sprite = malloc(sizeof(Sprite));
     tilemap1->sprite->number_of_tiles_horizontal = 3;
@@ -167,10 +178,10 @@ void game_update(void)
     }
 
     Collision_Info col_info = grid_collision(&components->grid_collider, &components->position, bc, move_x*4, move_y);
-    player_pos->x += col_info.modified_move_x;
-    player_pos->y += col_info.modified_move_y;
-    //player_pos->x -= move_x;
-    //player_pos->y -= move_y;
+    //player_pos->x += col_info.modified_move_x;
+    //player_pos->y += col_info.modified_move_y;
+    player_pos->x += move_x;
+    player_pos->y -= move_y;
 }
 
 void game_cleanup(void)
