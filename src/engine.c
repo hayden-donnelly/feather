@@ -60,8 +60,8 @@ void loop(void)
 
 int engine_init(void)
 {
-    int window_width = 2560;
-    int window_height = 1440;
+    int window_width = 600;
+    int window_height = 400;
     int target_render_width = 256;
     int target_render_height = 144;
 
