@@ -103,8 +103,9 @@ void game_init(void)
     // Grid Collider
     Grid_Collider *grid_col = malloc(sizeof(Grid_Collider));
     grid_col->entity_id = 500;
-    grid_col->grid_width = 6;
-    grid_col->grid_height = 6;
+    // Always make sure these values match those of the associated tilemap.
+    grid_col->grid_width = 10;
+    grid_col->grid_height = 10;
     grid_col->cell_width = 16;
     grid_col->cell_height = 16;
     grid_col->collision_ids = malloc(sizeof(int)*256);
@@ -169,19 +170,19 @@ void game_update(void)
         }
         else if(get_input("up"))
         {
-            move_y -= 1;
+            move_y += 1;
         }
         else if(get_input("down"))
         {
-            move_y += 1;
+            move_y -= 1;
         }
     }
 
     Collision_Info col_info = grid_collision(&components->grid_collider, &components->position, bc, move_x*4, move_y);
     player_pos->x += col_info.modified_move_x;
-    player_pos->y += col_info.modified_move_y;
+    //player_pos->y += col_info.modified_move_y;
     //player_pos->x += move_x;
-    //player_pos->y -= move_y;
+    player_pos->y += move_y;
 }
 
 void game_cleanup(void)

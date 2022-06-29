@@ -16,7 +16,7 @@ int pos_to_grid_cell_id(int x, int y, int cell_offset, Grid_Collider *grid_colli
 // Set coordinate = x and cell_size = cell_width to calculate distance to vertical grid line.
 // Set coordinate = y and cell_size = cell_height to calculate distance to horizontal grid line.
 // When cell_offset = 0, function will calculate the distance to the line that is to the left
-// or above coordinate. Inversely, function will calcualte distance to the line that is to the right
+// or above coordinate. Inversely, function will calculatte distance to the line that is to the right
 // or below cordinate when cell_offset = 1.
 int calc_delta(int coordinate, int cell_size, int cell_offset)
 {
@@ -51,6 +51,7 @@ int hor_collision(int move_x, int move_y, int pos_x, int pos_y, int cell_offset,
         {
             int current_move_y = (int)(move_y * abs(modified_move_x / move_x));
             int current_pos_y = pos_y + current_move_y;
+            //int current_pos_y = pos_y;
             int grid_cell_id = pos_to_grid_cell_id(pos_x + modified_move_x, current_pos_y, cell_offset, grid_collider);
         
             if(grid_collider->collision_ids[grid_cell_id] == 1)
@@ -103,15 +104,20 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
     // Rightward movement.
     if(move_x < 0)
     {
-        //top_movement = hor_collision(move_x, move_y, position->x-16-position2->x, position->y, 1, grid_collider);
-        top_movement = hor_collision(move_x, move_y, position->x-position2->x-16, position->y, 1, grid_collider);
-        //bottom_movement = hor_collision(move_x, move_y, position->x-16, position->y+16, 1, grid_collider);
+        top_movement = hor_collision(move_x, move_y, position->x-position2->x-16, 
+                                    position->y-position2->y, 1, grid_collider);
+
+        bottom_movement = hor_collision(move_x, move_y, position->x-position2->x-16, 
+                                        position->y-position2->y-16, 1, grid_collider);
     }
     // Leftward movement.
     else if(move_x > 0)
     {
-        top_movement = hor_collision(move_x, move_y, position->x-position2->x, position->y, 0, grid_collider);
-        //bottom_movement = hor_collision(move_x, move_y, position->x, position->y+16, 0, grid_collider);
+        top_movement = hor_collision(move_x, move_y, position->x-position2->x, 
+                                    position->y-position2->y, 0, grid_collider);
+
+        bottom_movement = hor_collision(move_x, move_y, position->x-position2->x, 
+                                        position->y-position2->y-16, 0, grid_collider);
     }
 
 
@@ -128,7 +134,7 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
         collision_info.modified_move_y = potential_move_y_2;
     }*/
 
-    collision_info.modified_move_x = top_movement;
+    collision_info.modified_move_x = (abs(top_movement) > abs(bottom_movement)) ? bottom_movement : top_movement;
 
     return collision_info;
 }
