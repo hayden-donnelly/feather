@@ -3,13 +3,13 @@
 #include "grid_collider.h"
 
 // Determine which grid cell a set of coordinates are in.
-int pos_to_grid_cell_id(int x, int y, Grid_Collider *grid_collider)
+int pos_to_grid_cell_id(int x, int y, int cell_offset, Grid_Collider *grid_collider)
 {
     x = abs(x);
     y = abs(y);
     int grid_x = (int)floor((double)x / (double)grid_collider->cell_width);
     int grid_y = (int)floor((double)y / (double)grid_collider->cell_height);
-    return grid_y * grid_collider->grid_width + grid_x;
+    return grid_y * grid_collider->grid_width + grid_x + cell_offset;
 }
 
 // Calculates the difference between some coordinate and specified grid line.
@@ -26,11 +26,10 @@ int calc_delta(int coordinate, int cell_size, int cell_offset)
     return abs(coordinate - cell_line_coordinate);
 }
 
-// Number of horizontal collision checks required.
-int calc_hor_check_quantity(int move_x, int delta, int cell_size)
+// Number of collision checks required.
+int calc_check_quantity(int move, int delta, int cell_size)
 {
-    // remember to fix this sign for move
-    return (int)floor((double)(abs(move_x) - abs(delta)) / (double)cell_size) + 1;
+    return (int)floor((double)(abs(move) - abs(delta)) / (double)cell_size) + 1;
 }
 
 // See comment above calc_delta() for explanation of cell_offset. It is passed into that function.
@@ -46,13 +45,13 @@ int hor_collision(int move_x, int move_y, int pos_x, int pos_y, int cell_offset,
     }
     else
     {
-        int hor_check_quantity = calc_hor_check_quantity(move_x, delta, grid_collider->cell_width);
+        int hor_check_quantity = calc_check_quantity(move_x, delta, grid_collider->cell_width);
         int modified_move_x = delta * move_sign_x;
         for(int i = 0; i < hor_check_quantity; i++)
         {
             int current_move_y = (int)(move_y * abs(modified_move_x / move_x));
             int current_pos_y = pos_y + current_move_y;
-            int grid_cell_id = pos_to_grid_cell_id(pos_x + modified_move_x - cell_offset, current_pos_y, grid_collider);
+            int grid_cell_id = pos_to_grid_cell_id(pos_x + modified_move_x, current_pos_y, cell_offset, grid_collider);
         
             if(grid_collider->collision_ids[grid_cell_id] == 1)
             {
