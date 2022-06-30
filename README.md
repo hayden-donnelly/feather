@@ -8,7 +8,6 @@ Collision is currently a work in progress.
 
 * SDL2
 * SDL2_image
-* SDL2_ttf
 
 ## Compilation and Execution
 
