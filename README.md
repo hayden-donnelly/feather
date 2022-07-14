@@ -1,6 +1,6 @@
 ## About
 
-Feather Engine is a lightweight 2D game engine with an entity-component-system (ECS) architecture. 
+Feather is a lightweight 2D game framework with an entity-component-system (ECS) architecture. 
 
 Collision is currently a work in progress.
 
