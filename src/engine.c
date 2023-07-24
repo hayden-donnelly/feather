@@ -9,6 +9,10 @@ static double timer_dt;
 static double timer_fixed_dt;
 static double timer_accumulator;
 
+SDL_Window *window;
+SDL_Renderer *renderer;
+int running;
+
 double read_timer_dt(void) { return timer_dt; }
 
 static void events(SDL_Event event)

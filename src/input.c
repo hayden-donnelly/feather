@@ -1,5 +1,12 @@
 #include "input.h"
 
+Uint8 input_previous_keyboard_state[512];
+Uint8 input_current_keyboard_state[512];
+const Uint8 *input_keyboard_state_pointer;
+
+Game_Input *game_inputs;
+int number_of_game_inputs;
+
 // Returns true if key was pressed this frame
 int input_get_key_down(SDL_Scancode scancode)
 {

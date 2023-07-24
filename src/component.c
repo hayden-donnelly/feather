@@ -3,6 +3,8 @@
 #include "component.h"
 #include "hash.h"
 
+Components *components;
+
 Component_Type init_component_type(int length)
 {
     Component_Type new_component;

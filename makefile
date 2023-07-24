@@ -3,7 +3,7 @@ CC			= gcc
 EXTENSION	= c
 SRCS_DIR	= src
 
-LFLAGS		+= -lm -lsdl2 -lsdl2_image
+LFLAGS		+= -lm -lSDL2 -lSDL2_image
 SRCS		= $(shell find $(SRCS_DIR) -type f -name *.$(EXTENSION))
 
 all:

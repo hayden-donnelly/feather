@@ -17,7 +17,7 @@ typedef struct
     Component_Type grid_collider;
 } Components;
 
-Components *components;
+extern Components *components;
 
 Component_Type init_component_type(int length);
 void add_component(Component_Type *component_type, void *component_data, int entity_id);
