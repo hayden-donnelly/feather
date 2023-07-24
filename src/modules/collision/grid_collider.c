@@ -116,7 +116,7 @@ int ver_collision(int move_x, int move_y, int pos_x, int pos_y, int cell_offset,
 }
 
 
-Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type *position_type, 
+Collision_Info grid_collision_old(Component_Type *grid_collider_type, Component_Type *position_type, 
                                 Box_Collider *box_collider, int move_x, int move_y)
 {
     // It's kind of weird how component types are passed into this function.
@@ -150,8 +150,10 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
     // Rightward movement.
     if(move_x < 0)
     {
-        top_movement = hor_collision(move_x, move_y, position->x-position2->x-16, 
-                                        position->y-position2->y, 1, grid_collider);
+        top_movement = hor_collision(
+            move_x, move_y, position->x-position2->x-16, 
+            position->y-position2->y, 1, grid_collider
+        );
 
         bottom_movement = hor_collision(move_x, move_y, position->x-position2->x-16, 
                                             position->y-position2->y-16, 1, grid_collider);
@@ -197,8 +199,41 @@ Collision_Info grid_collision(Component_Type *grid_collider_type, Component_Type
         collision_info.modified_move_y = potential_move_y_2;
     }*/
 
-    collision_info.modified_move_x = (abs(top_movement) > abs(bottom_movement)) ? bottom_movement : top_movement;
-    collision_info.modified_move_y = (abs(left_movement) > abs(right_movement)) ? right_movement : left_movement;
+    collision_info.modified_move_x = 
+        (abs(top_movement) > abs(bottom_movement)) ? bottom_movement : top_movement;
+    collision_info.modified_move_y = 
+        (abs(left_movement) > abs(right_movement)) ? right_movement : left_movement;
+
+    return collision_info;
+}
+
+Collision_Info grid_collision(
+    Component_Type *grid_collider_type, Component_Type *position_type, 
+    int move_x, int move_y)
+{
+    Grid_Collider *grid_collider = grid_collider_type->data[0];
+    Collision_Info collision_info;
+    collision_info.modified_move_x = 0;
+    collision_info.modified_move_y = 0;
+
+    Position *player_position = get_component(position_type, 30);
+    int starting_x = player_position->x + move_x;
+    int starting_y = player_position->y + move_y;
+
+    int grid_x = (int)floor((double)starting_x / (double)grid_collider->cell_width) + 1;
+    int grid_y = (int)floor((double)starting_y / (double)grid_collider->cell_height);
+    int grid_id = grid_y * grid_collider->grid_width + grid_x;
+    
+    if(move_x != 0 || move_y != 0)
+    {
+        printf("grid_x: %d, grid_y: %d\n", grid_x, grid_y);
+    }
+
+    if(grid_collider->collision_ids[grid_id] == 0)
+    {
+        collision_info.modified_move_x = move_x;
+        collision_info.modified_move_y = move_y;
+    }
 
     return collision_info;
 }

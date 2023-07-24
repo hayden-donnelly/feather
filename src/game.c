@@ -5,6 +5,8 @@
 #include <SDL2/SDL_image.h>
 
 #define MAX_ENTITIES 500
+#define PLAYER_ID 30
+#define GRID_COL_ID 40
 
 // This file is used for testing many different parts of the engine so it's very messy right now
 
@@ -30,79 +32,64 @@ void game_init(void)
     components->tilemap = init_component_type(1);
     components->grid_collider = init_component_type(1);
 
-    // Required for centering player on screen.
-    Position *pos1 = malloc(sizeof(Position));
-    pos1->entity_id = 30;
-    pos1->x = 112;
-    pos1->y = 56;
-    add_component(&components->position, pos1, 30);
-
-    Position *pos2 = malloc(sizeof(Position));
-    pos2->entity_id = 32;
-    pos2->x = 0;
-    pos2->y = 0;
-    add_component(&components->position, pos2, 32);
+    Position *player_position = malloc(sizeof(Position));
+    player_position->entity_id = PLAYER_ID;
+    player_position->x = 0;
+    player_position->y = 0;
+    add_component(&components->position, player_position, PLAYER_ID);
 
     // Animation
-    Anim_Controller *anim_controller1 = malloc(sizeof(Anim_Controller));
-    anim_controller1->entity_id = 30;
-    anim_controller1->sprite = malloc(sizeof(Sprite));
-    anim_controller1->sprite->tile_width = 16;
-    anim_controller1->sprite->tile_height = 16;
-    anim_controller1->sprite->number_of_tiles_horizontal = 16;
-    anim_controller1->sprite->number_of_tiles_vertical = 7;
-    anim_controller1->sprite->tex = IMG_LoadTexture(renderer, "assets/16x16_test.png");
+    Anim_Controller *anim_controller = malloc(sizeof(Anim_Controller));
+    anim_controller->entity_id = 30;
+    anim_controller->sprite = malloc(sizeof(Sprite));
+    anim_controller->sprite->tile_width = 16;
+    anim_controller->sprite->tile_height = 16;
+    anim_controller->sprite->number_of_tiles_horizontal = 16;
+    anim_controller->sprite->number_of_tiles_vertical = 7;
+    anim_controller->sprite->tex = IMG_LoadTexture(renderer, "assets/16x16_test.png");
     SDL_Rect draw_rect;
     draw_rect.x = 0;
     draw_rect.y = 0;
     draw_rect.w = 16;
     draw_rect.h = 16;
-    anim_controller1->sprite->src = draw_rect;
-    anim_controller1->sprite->dst = draw_rect;
-    anim_controller1->anims = malloc(sizeof(Anim)*3);
-    anim_controller1->anim_id = 0;
-    anim_controller1->frame_id = 0;
-    anim_controller1->default_anim_id = 0;
+    anim_controller->sprite->src = draw_rect;
+    anim_controller->sprite->dst = draw_rect;
+    anim_controller->anims = malloc(sizeof(Anim)*3);
+    anim_controller->anim_id = 0;
+    anim_controller->frame_id = 0;
+    anim_controller->default_anim_id = 0;
 
     Anim anim1;  
     anim1.frame_count = 2;
     anim1.tile_ids = malloc(sizeof(int)*2);
-    // Character 1
     anim1.tile_ids[0] = 1;
     anim1.tile_ids[1] = 2;
-    // Character 2
-    //anim1.tile_ids[0] = 5;
-    //anim1.tile_ids[1] = 6;
-    // Character 3
-    //anim1.tile_ids[0] = 14;
-    //anim1.tile_ids[1] = 13;
-
     anim1.loop = 1;
     anim1.speed = 0.5f;
-    anim_controller1->anims[0] = anim1;
 
-    add_component(&components->anim_controller, anim_controller1, 30);
+    anim_controller->anims[0] = anim1;
+    add_component(&components->anim_controller, anim_controller, PLAYER_ID);
 
     // Tilemap
-    Tilemap *tilemap1 = malloc(sizeof(Tilemap));
-    tilemap1->sprite_ids = (int*)&map4;
-    tilemap1->map_width = 10;
-    tilemap1->map_height = 10;
-    tilemap1->entity_id = 500;
-    tilemap1->sprite = malloc(sizeof(Sprite));
-    tilemap1->sprite->number_of_tiles_horizontal = 3;
-    tilemap1->sprite->number_of_tiles_vertical = 4;
-    tilemap1->sprite->tile_width = 16;
-    tilemap1->sprite->tile_height = 16;
-    tilemap1->sprite->tex = IMG_LoadTexture(renderer, "assets/tiles2.png");
-    tilemap1->sprite->dst = draw_rect;
-    tilemap1->sprite->src = draw_rect;
+    Tilemap *tilemap = malloc(sizeof(Tilemap));
+    tilemap->sprite_ids = (int*)&map4;
+    tilemap->map_width = 10;
+    tilemap->map_height = 10;
+    tilemap->entity_id = GRID_COL_ID;
+    tilemap->sprite = malloc(sizeof(Sprite));
+    tilemap->sprite->number_of_tiles_horizontal = 3;
+    tilemap->sprite->number_of_tiles_vertical = 4;
+    tilemap->sprite->tile_width = 16;
+    tilemap->sprite->tile_height = 16;
+    tilemap->sprite->tex = IMG_LoadTexture(renderer, "assets/tiles2.png");
+    tilemap->sprite->dst = draw_rect;
+    tilemap->sprite->src = draw_rect;
 
-    add_component(&components->tilemap, tilemap1, 500);
+    add_component(&components->tilemap, tilemap, GRID_COL_ID);
 
     // Grid Collider
     Grid_Collider *grid_col = malloc(sizeof(Grid_Collider));
-    grid_col->entity_id = 500;
+    grid_col->entity_id = GRID_COL_ID;
     // Always make sure these values match those of the associated tilemap.
     grid_col->grid_width = 10;
     grid_col->grid_height = 10;
@@ -113,14 +100,14 @@ void game_init(void)
     {
         grid_col->collision_ids[i] = (map4[i] == 1) ? 0 : 1;
     }
-    add_component(&components->grid_collider, grid_col, 500);
+    add_component(&components->grid_collider, grid_col, GRID_COL_ID);
 
     // Grid Collider Position
     Position *grid_col_pos = malloc(sizeof(Position));
-    grid_col_pos->entity_id = 500;
+    grid_col_pos->entity_id = GRID_COL_ID;
     grid_col_pos->x = 0;
     grid_col_pos->y = 0;
-    add_component(&components->position, grid_col_pos, 500);
+    add_component(&components->position, grid_col_pos, GRID_COL_ID);
 
     // Input 
     number_of_game_inputs = 4;
@@ -149,40 +136,42 @@ void game_init(void)
 
 void game_update(void)
 {
-    //update_anim(&components->anim_controller); - moved to render loop
-
-    Position *player_pos = get_component(&components->position, 32);
-    //bc->x = player_pos->x;
-    //bc->y = player_pos->y;
-
-    int move_x = 0;
-    int move_y = 0;
+    Position *player_pos = get_component(&components->position, PLAYER_ID);
 
     if(player_pos)
     {
-        if(get_input("left"))
-        {
-            move_x += 1;
-        }
-        else if(get_input("right"))
+        int move_x = 0;
+        int move_y = 0;
+
+        if(get_input_down("left"))
         {
             move_x -= 1;
         }
-        else if(get_input("up"))
+        else if(get_input_down("right"))
         {
-            move_y += 1;
+            move_x += 1;
         }
-        else if(get_input("down"))
+        else if(get_input_down("up"))
         {
             move_y -= 1;
         }
+        else if(get_input_down("down"))
+        {
+            move_y += 1;
+        }
+
+        move_x *= 16;
+        move_y *= 16;
+        Collision_Info col_info = grid_collision(
+            &components->grid_collider, &components->position, move_x, move_y
+        );
+        player_pos->x += col_info.modified_move_x;
+        player_pos->y += col_info.modified_move_y;
     }
 
-    Collision_Info col_info = grid_collision(&components->grid_collider, &components->position, bc, move_x*4, move_y);
-    player_pos->x += col_info.modified_move_x;
-    player_pos->y += col_info.modified_move_y;
-    //player_pos->x += move_x;
-    //player_pos->y += move_y;
+    //Collision_Info col_info = grid_collision(&components->grid_collider, &components->position, bc, move_x, move_y);
+    //player_pos->x += col_info.modified_move_x;
+    //player_pos->y += col_info.modified_move_y;
 }
 
 void game_cleanup(void)

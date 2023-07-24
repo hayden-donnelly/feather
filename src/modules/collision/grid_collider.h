@@ -15,5 +15,6 @@ typedef struct
     int *collision_ids;
 } Grid_Collider;
 
-Collision_Info grid_collision(Component_Type *grid_collider, Component_Type *position, 
-                        Box_Collider *box_collider, int move_x, int move_y);
+Collision_Info grid_collision(
+    Component_Type *grid_collider, Component_Type *position, int move_x, int move_y
+);
