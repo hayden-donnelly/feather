@@ -220,6 +220,8 @@ Collision_Info grid_collision(
     int starting_x = player_position->x + move_x;
     int starting_y = player_position->y + move_y;
 
+    int test;
+
     int grid_x = (int)floor((double)starting_x / (double)grid_collider->cell_width) + 1;
     int grid_y = (int)floor((double)starting_y / (double)grid_collider->cell_height);
     int grid_id = grid_y * grid_collider->grid_width + grid_x;
