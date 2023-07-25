@@ -37,7 +37,7 @@ void render_anim(Component_Type *cmp_type, Component_Type *pos)
         int y = 0;
         if(target_pos)
         {
-            x = target_pos->x+16;
+            x = target_pos->x;
             y = target_pos->y;
         }
         // TODO: hacky solution

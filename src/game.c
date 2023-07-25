@@ -33,7 +33,7 @@ void game_init(void)
 
     Position *player_position = malloc(sizeof(Position));
     player_position->entity_id = PLAYER_ID;
-    player_position->x = 0;
+    player_position->x = 16;
     player_position->y = 0;
     add_component(&components->position, player_position, PLAYER_ID);
 
@@ -165,7 +165,7 @@ void game_update(void)
             move_y += 1;
         }
 
-        move_x *= 40;
+        move_x *= 20;
         move_y *= 1;
         Collision_Info col_info = perfect_grid_collision(
             &components->grid_collider, &components->position,
