@@ -17,7 +17,6 @@ int position_to_grid_id(int x, int y, Grid_Collider *grid_collider)
     int grid_x = get_grid_x(x, grid_collider);
     int grid_y = get_grid_y(y, grid_collider);
     int grid_id = grid_y * grid_collider->grid_width + grid_x;
-    printf("x: %d\n", grid_x);
     return grid_id;
 }
 
@@ -156,10 +155,16 @@ Collision_Info vertical_collision(
     // X movement from start to first vertical intersection.
     int delta_x_0 = nearest_vertical_position - x_0;
     // X movement per vertical intersection.
-    int delta_x = grid_collider->cell_width;
+    int delta_x = grid_collider->cell_width * sign(move_x);
     int offset = -sign(move_x);
-
-    if(abs(move_x) <= abs(delta_x_0))
+    
+    if(move_x == 0)
+    {
+        collision_info.modified_move_x = 0;
+        collision_info.modified_move_y = move_y;
+        return collision_info;
+    }
+    else if(abs(move_x) < abs(delta_x_0))
     {
         // Don't modify movement because there is no chance of collision.
         collision_info.modified_move_x = move_x;
@@ -168,11 +173,9 @@ Collision_Info vertical_collision(
     }
 
     int max_vertical_intersections = 1 + (int)floor(
-        (double)(abs(move_x) - delta_x_0) / 
+        (double)(abs(move_x) - abs(delta_x_0)) / 
         (double)grid_collider->cell_width
     );
-
-    printf("1\n");
 
     // Percentage of total movement per vertical intersection.
     double movement_ratio = (double)grid_collider->cell_width / (double)move_x;
@@ -191,9 +194,7 @@ Collision_Info vertical_collision(
             y_0 + delta_y_0 + delta_y * i, 
             grid_collider
         );
-        printf("2\n");
-        if(grid_collider->collision_ids[grid_id]) { break; }
-        printf("3\n");
+        if(grid_collider->collision_ids[grid_id] == 1) { break; }
         non_collision_intersections = i + 1;
     }
 
@@ -202,14 +203,32 @@ Collision_Info vertical_collision(
         // Don't modify movement because there were no collisions.
         collision_info.modified_move_x = move_x;
         collision_info.modified_move_y = move_y;
+        printf(
+            "NO COLLISION. delta_x_0: %d, non collisions: %d, delta_x: %d\n", 
+            delta_x_0, non_collision_intersections, delta_x
+        );
+    }
+    else if(non_collision_intersections == 0)
+    {
+        // Decrease movement so it ends at the edge of the collision.
+        collision_info.modified_move_x = delta_x_0 + offset;
+        collision_info.modified_move_y = delta_y_0;
+        printf(
+            "COLLISION. delta_x_0: %d, non collisions: %d, delta_x: %d\n", 
+            delta_x_0, non_collision_intersections, delta_x
+        ); 
     }
     else
     {
         // Decrease movement so it ends at the edge of the collision.
         collision_info.modified_move_x = 
-            delta_x_0 + non_collision_intersections * delta_x + offset;
+            delta_x_0 + (non_collision_intersections - 1) * delta_x;
         collision_info.modified_move_y = 
             delta_y_0 + non_collision_intersections * delta_y;
+        printf(
+            "COLLISION. delta_x_0: %d, non collisions: %d, delta_x: %d\n", 
+            delta_x_0, non_collision_intersections, delta_x
+        );
     }
     return collision_info;
 }
@@ -288,7 +307,6 @@ Collision_Info point_collision(
 {
     Collision_Info vertical = 
         vertical_collision(grid_collider, x_0, y_0, move_x, move_y);
-    printf("vertical collision done\n");
     Collision_Info horizontal = 
         horizontal_collision(grid_collider, x_0, y_0, move_x, move_y);
 
@@ -297,8 +315,9 @@ Collision_Info point_collision(
     double horizontal_length =
         vector_length(horizontal.modified_move_x, horizontal.modified_move_y);
 
-    if(vertical_length < horizontal_length) { return vertical; }
-    else { return horizontal; }
+    //if(vertical_length < horizontal_length) { return vertical; }
+    //else { return horizontal; }
+    return vertical;
 }
 
 Collision_Info perfect_grid_collision(
@@ -324,16 +343,15 @@ Collision_Info perfect_grid_collision(
     int bot_left_x = top_left_x;
     int bot_left_y = bot_right_y;
 
-    printf("start\n");
     Collision_Info top_left_ci = 
         point_collision(grid_collider, top_left_x, top_left_y, move_x, move_y);
-    printf("end\n");
     Collision_Info top_right_ci = 
         point_collision(grid_collider, top_right_x, top_right_y, move_x, move_y);
     Collision_Info bot_left_ci = 
         point_collision(grid_collider, bot_left_x, bot_left_y, move_x, move_y);
     Collision_Info bot_right_ci =
         point_collision(grid_collider, bot_right_x, bot_right_y, move_x, move_y);
+    if(move_x != 0) { printf("----------------\n"); }
 
     double top_left_length = 
         vector_length(top_left_ci.modified_move_x, top_left_ci.modified_move_y);
