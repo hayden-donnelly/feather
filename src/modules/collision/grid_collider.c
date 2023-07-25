@@ -28,6 +28,11 @@ int sign(int number)
     return 0;
 }
 
+double vector_length(int x, int y)
+{
+    return sqrt(pow((double)x, 2) + pow((double)y, 2));
+}
+
 Collision_Info simple_grid_collision(
     Component_Type *grid_collider_type, Component_Type *position_type, 
     int move_x, int move_y, int position_id, int grid_collider_id
@@ -138,6 +143,158 @@ Collision_Info complex_grid_collision(
     return collision_info;
 }
 
+Collision_Info vertical_collision(
+    Grid_Collider *grid_collider, int x_0, int y_0, int move_x, int move_y
+)
+{
+    Collision_Info collision_info;
+    int grid_x = get_grid_x(x_0, grid_collider);
+    // This is the position of the nearest LEFT vertical by default.
+    int nearest_vertical_position = grid_x * grid_collider->cell_width;
+    // If moving to the right, add cell width to get RIGHT vertical instead.
+    if(move_x > 0) { nearest_vertical_position += grid_collider->cell_width; }
+    // X movement from start to first vertical intersection.
+    int delta_x_0 = nearest_vertical_position - x_0;
+    // X movement per vertical intersection.
+    int delta_x = grid_collider->cell_width;
+
+    if(abs(move_x) < delta_x_0)
+    {
+        // Don't modify movement because there is no chance of collision.
+        collision_info.modified_move_x = move_x;
+        collision_info.modified_move_y = move_y;
+        return collision_info;
+    }
+
+    int max_vertical_intersections = 1 + (int)floor(
+        (double)(abs(move_x) - delta_x_0) / 
+        (double)grid_collider->cell_width
+    );
+
+    // Percentage of total movement per vertical intersection.
+    double movement_ratio = (double)grid_collider->cell_width / (double)move_x;
+    // Y movement per vertical intersection.
+    int delta_y = (int)(movement_ratio * (double)move_y);
+    // Percentage of total movement from start to first vertical intersection.
+    double movement_ratio_0 = (double)delta_x_0 / (double)move_x;
+    // Y movement from start to first vertical intersection.
+    int delta_y_0 = (int)(movement_ratio_0 * (double)move_y);
+
+    int non_collision_intersections = 0;
+    for(int i = 0; i < max_vertical_intersections; i++)
+    {
+        int grid_id = position_to_grid_id(
+            x_0 + delta_x_0 + delta_x * i, 
+            y_0 + delta_y_0 + delta_y * i, 
+            grid_collider
+        );
+
+        if(grid_collider->collision_ids[grid_id]) { break; }
+        non_collision_intersections = i + 1;
+    }
+
+    if(non_collision_intersections == max_vertical_intersections)
+    {
+        // Don't modify movement because there were no collisions.
+        collision_info.modified_move_x = move_x;
+        collision_info.modified_move_y = move_y;
+    }
+    else
+    {
+        // Decrease movement so it ends at the edge of the collision.
+        collision_info.modified_move_x = 
+            delta_x_0 - 1 + non_collision_intersections * delta_x;
+        collision_info.modified_move_y = 
+            delta_y_0 + non_collision_intersections * delta_y;
+    }
+    return collision_info;
+}
+
+Collision_Info horizontal_collision(
+    Grid_Collider *grid_collider, int x_0, int y_0, int move_x, int move_y
+)
+{
+    Collision_Info collision_info;
+    int grid_y = get_grid_y(y_0, grid_collider);
+    // This is the position of the nearest UP horizontal by default.
+    int nearest_horizontal_position = grid_y * grid_collider->cell_height;
+    // If moving down, add cell height to get DOWN vertical instead.
+    if(move_y > 0) { nearest_horizontal_position += grid_collider->cell_height; }
+    // Y movement from start to first horizontal intersection.
+    int delta_y_0 = nearest_horizontal_position - y_0;
+    // Y movement per vertical intersection.
+    int delta_y = grid_collider->cell_height;
+
+    if(abs(move_y) < delta_y_0)
+    {
+        // Don't modify movement because there is no chance of collision.
+        collision_info.modified_move_x = move_x;
+        collision_info.modified_move_y = move_y;
+        return collision_info;
+    }
+
+    int max_horizontal_intersections = 1 + (int)floor(
+        (double)(abs(move_y) - delta_y_0) / 
+        (double)grid_collider->cell_height
+    );
+
+    // Percentage of total movement per horizontal intersection.
+    double movement_ratio = (double)grid_collider->cell_height / (double)move_y;
+    // X movement per horizontal intersection.
+    int delta_x = (int)(movement_ratio * (double)move_x);
+    // Percentage of total movement from start to first horizontal intersection.
+    double movement_ratio_0 = (double)delta_y_0 / (double)move_y;
+    // X movement from start to first horizontal intersection.
+    int delta_x_0 = (int)(movement_ratio_0 * (double)move_x);
+
+    int non_collision_intersections = 0;
+    for(int i = 0; i < max_horizontal_intersections; i++)
+    {
+        int grid_id = position_to_grid_id(
+            x_0 + delta_x_0 + delta_x * i, 
+            y_0 + delta_y_0 + delta_y * i, 
+            grid_collider
+        );
+
+        if(grid_collider->collision_ids[grid_id]) { break; }
+        non_collision_intersections = i + 1;
+    }
+
+    if(non_collision_intersections == max_horizontal_intersections)
+    {
+        // Don't modify movement because there were no collisions.
+        collision_info.modified_move_x = move_x;
+        collision_info.modified_move_y = move_y;
+    }
+    else
+    {
+        // Decrease movement so it ends at the edge of the collision.
+        collision_info.modified_move_x = 
+            delta_x_0 - 1 + non_collision_intersections * delta_x;
+        collision_info.modified_move_y = 
+            delta_y_0 + non_collision_intersections * delta_y;
+    }
+    return collision_info;
+}
+
+Collision_Info point_collision(
+    Grid_Collider *grid_collider, int x_0, int y_0, int move_x, int move_y
+)
+{
+    Collision_Info vertical = 
+        vertical_collision(grid_collider, x_0, y_0, move_x, move_y);
+    Collision_Info horizontal = 
+        horizontal_collision(grid_collider, x_0, y_0, move_x, move_y);
+
+    double vertical_length = 
+        vector_length(vertical.modified_move_x, vertical.modified_move_y);
+    double horizontal_length =
+        vector_length(horizontal.modified_move_x, horizontal.modified_move_y);
+
+    if(vertical_length < horizontal_length) { return vertical; }
+    else { return horizontal; }
+}
+
 Collision_Info perfect_grid_collision(
     Component_Type *grid_collider_type, Component_Type *position_type, 
     Component_Type *box_collider_type, int move_x, int move_y, int mover_id, 
@@ -158,114 +315,36 @@ Collision_Info perfect_grid_collision(
     int top_left_y = top_right_y;
     int bot_right_x = top_right_x;
     int bot_right_y = mover_position->y + mover_collider->h;
+    int bot_left_x = top_left_x;
+    int bot_left_y = bot_right_y;
 
-    int move_x_sign = sign(move_x);
-    int abs_move_x = abs(move_x);
-    int move_y_sign = sign(move_y);
-    int abs_move_y = abs(move_y);
+    Collision_Info top_left_ci = 
+        point_collision(grid_collider, top_left_x, top_left_y, move_x, move_y);
+    Collision_Info top_right_ci = 
+        point_collision(grid_collider, top_right_x, top_right_y, move_x, move_y);
+    Collision_Info bot_left_ci = 
+        point_collision(grid_collider, bot_left_x, bot_left_y, move_x, move_y);
+    Collision_Info bot_right_ci =
+        point_collision(grid_collider, bot_right_x, bot_right_y, move_x, move_y);
 
-    if(move_x > 0)
+    double top_left_length = 
+        vector_length(top_left_ci.modified_move_x, top_left_ci.modified_move_y);
+    double top_right_length = 
+        vector_length(top_right_ci.modified_move_x, top_right_ci.modified_move_y);
+    double bot_left_length = 
+        vector_length(bot_left_ci.modified_move_x, bot_left_ci.modified_move_y);
+    double bot_right_length = 
+        vector_length(bot_right_ci.modified_move_x, bot_right_ci.modified_move_y);
+
+    double lengths[] = 
+        { top_left_length, top_right_length, bot_left_length, bot_right_length };
+    int min_length_id = 0;
+    for(int i = 0; i < 4; i++)
     {
-        int grid_x = get_grid_x(top_right_x, grid_collider);
-        int right_vertical_position = (grid_x + 1) * grid_collider->cell_width;
-        // X movement from start to first vertical intersection.
-        int delta_x_0 = right_vertical_position - top_right_x;
-        // X movement per vertical intersection.
-        int delta_x = grid_collider->cell_width;
-        
-        if(abs_move_x < delta_x_0)
-        {
-            collision_info.modified_move_x = move_x;
-        }
-        else
-        {
-            int vertical_intersections = 1 + (int)floor(
-                (double)(abs_move_x - delta_x_0) / 
-                (double)grid_collider->cell_width
-            );
-
-            // Percentage of total movement per vertical intersection.
-            double movement_ratio = (double)grid_collider->cell_width / (double)move_x;
-            // Y movement per vertical intersection.
-            int delta_y = (int)(movement_ratio * (double)move_y);
-            // Percentage of total movement from start to first vertical intersection.
-            double movement_ratio_0 = (double)delta_x_0 / (double)move_x;
-            // Y movement from start to first vertical intersection.
-            int delta_y_0 = (int)(movement_ratio_0 * (double)move_y) ;
-
-            printf("Vertical intersections: %d\n", vertical_intersections);
-
-            int non_collision_intersections = 0;
-
-            for(int i = 0; i < vertical_intersections; i++)
-            {
-                int total_delta_x = delta_x_0 + delta_x * i;
-                int total_delta_y = delta_y_0 + delta_y * i;
-                int top_right_id = position_to_grid_id(
-                    top_right_x + total_delta_x, 
-                    top_right_y + total_delta_y, 
-                    grid_collider
-                );
-                int bot_right_id = position_to_grid_id(
-                    bot_right_x + total_delta_x,
-                    bot_right_y + total_delta_y,
-                    grid_collider
-                );
-                
-                if(grid_collider->collision_ids[top_right_id]
-                    || grid_collider->collision_ids[bot_right_id])
-                {
-                    break;
-                }
-                non_collision_intersections = i + 1;
-            }
-
-            printf("Non collision intersections: %d\n", non_collision_intersections);
-
-            collision_info.modified_move_x = 
-                delta_x_0 - 1
-                + non_collision_intersections
-                * grid_collider->cell_width;
-        }
+        if(lengths[i] < lengths[min_length_id]) { min_length_id = i; }
     }
-    else if(move_x < 0)
-    {
-        int grid_x = get_grid_x(top_left_x, grid_collider);
-        int left_vertical_position = grid_x * grid_collider->cell_width;
-        int distance_to_nearest_vertical = top_left_x - left_vertical_position; 
-        printf("Distance to nearest: %d\n", distance_to_nearest_vertical);
-
-        if(abs_move_x < distance_to_nearest_vertical)
-        {
-            collision_info.modified_move_x = move_x;
-        }
-        else
-        {
-            int vertical_intersection_count = 1 + (int)floor(
-                (double)(abs_move_x - distance_to_nearest_vertical) / 
-                (double)grid_collider->cell_width
-            );
-
-            printf("Vertical intersections: %d\n", vertical_intersection_count);
-
-            int non_collision_intersection_count = 0;
-
-            printf("Grid ID: %d\n", grid_x - 1);
-            printf("Left ID: %d\n", grid_collider->collision_ids[grid_x - 1]);
-            for(int i = 1; i <= vertical_intersection_count; i++)
-            {
-                if(grid_collider->collision_ids[grid_x - i] == 1) { break; }
-                non_collision_intersection_count = i;
-            }
-
-            printf("Non collision intersections: %d\n", non_collision_intersection_count);
-
-            collision_info.modified_move_x = 
-                distance_to_nearest_vertical
-                + (non_collision_intersection_count)
-                * grid_collider->cell_width;
-            collision_info.modified_move_x *= -1;
-        } 
-    }
-    return collision_info;
+    if(min_length_id == 0) { return top_left_ci; }
+    else if(min_length_id == 1) { return top_right_ci; }
+    else if(min_length_id == 2) { return bot_left_ci; }
+    else { return bot_right_ci; }
 }
