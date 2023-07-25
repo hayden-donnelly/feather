@@ -172,11 +172,6 @@ Collision_Info vertical_collision(
         return collision_info;
     }
 
-    int max_vertical_intersections = 1 + (int)floor(
-        (double)(abs(move_x) - abs(delta_x_0)) / 
-        (double)grid_collider->cell_width
-    );
-
     // Percentage of total movement per vertical intersection.
     double movement_ratio = (double)grid_collider->cell_width / (double)move_x;
     // Y movement per vertical intersection.
@@ -186,50 +181,30 @@ Collision_Info vertical_collision(
     // Y movement from start to first vertical intersection.
     int delta_y_0 = (int)(movement_ratio_0 * (double)move_y);
 
-    int non_collision_intersections = 0;
-    for(int i = 0; i < max_vertical_intersections; i++)
+    collision_info.modified_move_x = delta_x_0;
+    collision_info.modified_move_y = delta_y_0;
+    while(abs(collision_info.modified_move_x) < abs(move_x))
     {
         int grid_id = position_to_grid_id(
-            x_0 + delta_x_0 + delta_x * i, 
-            y_0 + delta_y_0 + delta_y * i, 
+            x_0 + collision_info.modified_move_x,
+            y_0 + collision_info.modified_move_y,
             grid_collider
         );
         if(grid_collider->collision_ids[grid_id] == 1) { break; }
-        non_collision_intersections = i + 1;
+        collision_info.modified_move_x += delta_x;
+        collision_info.modified_move_x += delta_y;
     }
-
-    if(non_collision_intersections == max_vertical_intersections)
+    if(abs(collision_info.modified_move_x) > abs(move_x))
     {
-        // Don't modify movement because there were no collisions.
         collision_info.modified_move_x = move_x;
         collision_info.modified_move_y = move_y;
-        printf(
-            "NO COLLISION. delta_x_0: %d, non collisions: %d, delta_x: %d\n", 
-            delta_x_0, non_collision_intersections, delta_x
-        );
     }
-    else if(non_collision_intersections == 0)
-    {
-        // Decrease movement so it ends at the edge of the collision.
-        collision_info.modified_move_x = delta_x_0 + offset;
-        collision_info.modified_move_y = delta_y_0;
-        printf(
-            "COLLISION. delta_x_0: %d, non collisions: %d, delta_x: %d\n", 
-            delta_x_0, non_collision_intersections, delta_x
-        ); 
-    }
-    else
-    {
-        // Decrease movement so it ends at the edge of the collision.
-        collision_info.modified_move_x = 
-            delta_x_0 + (non_collision_intersections - 1) * delta_x;
-        collision_info.modified_move_y = 
-            delta_y_0 + non_collision_intersections * delta_y;
-        printf(
-            "COLLISION. delta_x_0: %d, non collisions: %d, delta_x: %d\n", 
-            delta_x_0, non_collision_intersections, delta_x
-        );
-    }
+    collision_info.modified_move_x += offset;
+
+    printf(
+        "Modified x: %d, delta_x_0: %d\n", 
+        collision_info.modified_move_x, delta_x_0
+    );
     return collision_info;
 }
 
