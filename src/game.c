@@ -156,17 +156,17 @@ void game_update(void)
         {
             move_x += 1;
         }
-        else if(get_input("up"))
+        else if(get_input_down("up"))
         {
             move_y -= 1;
         }
-        else if(get_input("down"))
+        else if(get_input_down("down"))
         {
             move_y += 1;
         }
 
         move_x *= 20;
-        move_y *= 1;
+        move_y *= 20;
         Collision_Info col_info = perfect_grid_collision(
             &components->grid_collider, &components->position,
             &components->box_collider, move_x, move_y, PLAYER_ID, GRID_COL_ID
