@@ -5,12 +5,10 @@
 #include <SDL2/SDL_image.h>
 
 #define MAX_ENTITIES 500
-#define PLAYER_ID 30
-#define GRID_COL_ID 40
+const int PLAYER_ID = 30;
+const int GRID_COL_ID = 40;
 
 // This file is used for testing many different parts of the engine so it's very messy right now
-
-Box_Collider *bc;
 
 int map4[] = {  2,  1,  1,  1,  1,  2,  2,  2,  2,  2,
                 1,  1,  1,  1,  1,  2,  1,  1,  1,  2,
@@ -31,12 +29,19 @@ void game_init(void)
     components->anim_controller = init_component_type(MAX_ENTITIES);
     components->tilemap = init_component_type(1);
     components->grid_collider = init_component_type(1);
+    components->box_collider = init_component_type(MAX_ENTITIES);
 
     Position *player_position = malloc(sizeof(Position));
     player_position->entity_id = PLAYER_ID;
     player_position->x = 0;
     player_position->y = 0;
     add_component(&components->position, player_position, PLAYER_ID);
+
+    Box_Collider *player_box_collider = malloc(sizeof(Box_Collider));
+    player_box_collider->entity_id = PLAYER_ID;
+    player_box_collider->w = 16;
+    player_box_collider->h = 16;
+    add_component(&components->box_collider, player_box_collider, PLAYER_ID);
 
     // Animation
     Anim_Controller *anim_controller = malloc(sizeof(Anim_Controller));
@@ -160,10 +165,17 @@ void game_update(void)
             move_y += 1;
         }
 
+        /*move_x *= 1;
+        move_y *= 16;
+        Collision_Info col_info = complex_grid_collision(
+            &components->grid_collider, &components->position,
+            &components->box_collider, move_x, move_y, PLAYER_ID, GRID_COL_ID
+        );*/
         move_x *= 16;
         move_y *= 16;
-        Collision_Info col_info = grid_collision(
-            &components->grid_collider, &components->position, move_x, move_y
+        Collision_Info col_info = simple_grid_collision(
+            &components->grid_collider, &components->position,
+            move_x, move_y, PLAYER_ID, GRID_COL_ID
         );
         player_pos->x += col_info.modified_move_x;
         player_pos->y += col_info.modified_move_y;

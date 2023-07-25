@@ -207,32 +207,119 @@ Collision_Info grid_collision_old(Component_Type *grid_collider_type, Component_
     return collision_info;
 }
 
-Collision_Info grid_collision(
-    Component_Type *grid_collider_type, Component_Type *position_type, 
-    int move_x, int move_y)
+int position_to_grid_id(int x, int y, int grid_width, int cell_width, int cell_height)
 {
-    Grid_Collider *grid_collider = grid_collider_type->data[0];
+    /*int grid_x = (int)floor((double)x / (double)grid_collider->cell_width) + 1;
+    int grid_y = (int)floor((double)x / (double)grid_collider->cell_height);
+    int grid_id = grid_y * grid_collider->grid_width + grid_x;
+    printf("x: %d\n", grid_x);
+    return grid_id;*/
+
+    int grid_x = (int)floor((double)x / (double)cell_width) + 1;
+    int grid_y = (int)floor((double)y / (double)cell_height);
+    int grid_id = grid_y * grid_width + grid_x;
+    return grid_id;
+}
+
+Collision_Info simple_grid_collision(
+    Component_Type *grid_collider_type, Component_Type *position_type, 
+    int move_x, int move_y, int position_id, int grid_collider_id
+)
+{
+    Position *player_position = get_component(position_type, position_id);
+    int new_x = player_position->x + move_x;
+    int new_y = player_position->y + move_y;
+
+    Collision_Info collision_info;
+    collision_info.modified_move_x = move_x;
+    collision_info.modified_move_y = move_y;
+
+    Grid_Collider *grid_collider = get_component(grid_collider_type, grid_collider_id);
+    int grid_x = (int)floor((double)new_x / (double)grid_collider->cell_width) + 1;
+    int grid_y = (int)floor((double)new_y / (double)grid_collider->cell_height);
+    int grid_id = grid_y * grid_collider->grid_width + grid_x;
+    
+    printf("First ID: %d\n", grid_id);
+    //int grid_id = position_to_grid_id(new_x, new_y, grid_collider);
+    int grid_id2 = position_to_grid_id(
+        new_x, new_y, grid_collider->grid_width, 
+        grid_collider->cell_width, grid_collider->cell_height
+    );
+    printf("Second ID: %d\n", grid_id2);
+
+    if(grid_collider->collision_ids[grid_id] == 1)
+    {
+        collision_info.modified_move_x = 0;
+        collision_info.modified_move_y = 0;
+    }
+    
+    if(move_x != 0 || move_y != 0)
+    {
+        //printf("grid_x: %d, grid_y: %d\n", grid_x, grid_y);
+        printf("Collision ID: %d\n", grid_collider->collision_ids[grid_id]);
+    }
+
+    return collision_info;
+}
+
+Collision_Info complex_grid_collision(
+    Component_Type *grid_collider_type, Component_Type *position_type, 
+    Component_Type *box_collider_type, int move_x, int move_y, int mover_id, 
+    int grid_collider_id
+)
+{
+    Position *mover_position = get_component(position_type, mover_id);
+    int new_x = mover_position->x + move_x;
+    int new_y = mover_position->y + move_y;
+
+    Box_Collider *mover_collider = get_component(box_collider_type, mover_id);
+    int top_left_x = mover_position->x;
+    int top_left_y = mover_position->y;
+    int top_right_x = mover_position->x + mover_collider->w;
+    int top_right_y = mover_position->y;
+    int bot_left_x = mover_position->x;
+    int bot_left_y = mover_position->y + mover_collider->h;
+    int bot_right_x = mover_position->x + mover_collider->w;
+    int bot_right_y = mover_position->y + mover_collider->h;
+
+    Grid_Collider *grid_collider = get_component(grid_collider_type, grid_collider_id);
+
     Collision_Info collision_info;
     collision_info.modified_move_x = 0;
     collision_info.modified_move_y = 0;
 
-    Position *player_position = get_component(position_type, 30);
-    int starting_x = player_position->x + move_x;
-    int starting_y = player_position->y + move_y;
-
-    int grid_x = (int)floor((double)starting_x / (double)grid_collider->cell_width) + 1;
-    int grid_y = (int)floor((double)starting_y / (double)grid_collider->cell_height);
-    int grid_id = grid_y * grid_collider->grid_width + grid_x;
-    
-    if(move_x != 0 || move_y != 0)
+    if(move_x > 0)
     {
-        printf("grid_x: %d, grid_y: %d\n", grid_x, grid_y);
+        int bot_right_x = mover_position->x + mover_collider->w + move_x;
+        int bot_right_y = mover_position->y + mover_collider->h;
+        /*int top_right_id = position_to_grid_id(top_right_x, top_right_y, grid_collider);
+        int bot_right_id = position_to_grid_id(bot_right_x, bot_right_y, grid_collider);
+        if(grid_collider->collision_ids[top_right_id] == 0 && 
+           grid_collider->collision_ids[bot_right_id] == 0)
+        {
+            collision_info.modified_move_x = move_x;
+        }*/
+        int bot_right_id = 0;//position_to_grid_id(bot_right_x, bot_right_y, grid_collider);
+        if(grid_collider->collision_ids[bot_right_id] == 0)
+        {
+            collision_info.modified_move_x = move_x;
+        }
+        printf("Collision ID: %d\n", grid_collider->collision_ids[bot_right_id]);
     }
-
-    if(grid_collider->collision_ids[grid_id] == 0)
+    else if(move_x < 0)
     {
-        collision_info.modified_move_x = move_x;
-        collision_info.modified_move_y = move_y;
+        /*int top_left_id = position_to_grid_id(top_left_x, top_left_y, grid_collider);
+        int bot_left_id = position_to_grid_id(bot_left_x, bot_left_y, grid_collider);
+        if(grid_collider->collision_ids[top_left_id] == 0 && 
+           grid_collider->collision_ids[bot_left_id] == 0)
+        {
+            collision_info.modified_move_x = move_x;
+        }*/
+        int bot_left_id = 0;//position_to_grid_id(bot_left_x, bot_left_y, grid_collider);
+        if(grid_collider->collision_ids[bot_left_id] == 0)
+        {
+            collision_info.modified_move_x = move_x;
+        }
     }
 
     return collision_info;

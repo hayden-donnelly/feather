@@ -15,6 +15,7 @@ typedef struct
     Component_Type anim_controller;
     Component_Type tilemap;
     Component_Type grid_collider;
+    Component_Type box_collider;
 } Components;
 
 extern Components *components;
