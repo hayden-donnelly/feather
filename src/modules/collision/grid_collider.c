@@ -4,11 +4,6 @@
 
 int get_grid_x(int x, Grid_Collider *grid_collider)
 {
-    return (int)floor((double)x / (double)grid_collider->cell_width) + 1;
-}
-
-int get_left_grid_x(int x, Grid_Collider *grid_collider)
-{
     return (int)floor((double)x / (double)grid_collider->cell_width);
 }
 
@@ -155,7 +150,7 @@ Collision_Info perfect_grid_collision(
 
     Collision_Info collision_info;
     collision_info.modified_move_x = 0;
-    collision_info.modified_move_y = 0;
+    collision_info.modified_move_y = move_y;
 
     int top_right_x = mover_position->x + mover_collider->w;
     int top_right_y = mover_position->y;
@@ -169,7 +164,7 @@ Collision_Info perfect_grid_collision(
 
     if(move_x > 0)
     {
-        int grid_x = get_left_grid_x(top_right_x, grid_collider);
+        int grid_x = get_grid_x(top_right_x, grid_collider);
         int right_vertical_position = (grid_x + 1) * grid_collider->cell_width;
         int distance_to_nearest_vertical = right_vertical_position - top_right_x;
         
@@ -204,7 +199,7 @@ Collision_Info perfect_grid_collision(
     }
     else if(move_x < 0)
     {
-        int grid_x = get_left_grid_x(top_left_x, grid_collider);
+        int grid_x = get_grid_x(top_left_x, grid_collider);
         int left_vertical_position = grid_x * grid_collider->cell_width;
         int distance_to_nearest_vertical = top_left_x - left_vertical_position; 
         printf("Distance to nearest: %d\n", distance_to_nearest_vertical);
