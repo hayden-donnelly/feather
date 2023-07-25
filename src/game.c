@@ -39,8 +39,8 @@ void game_init(void)
 
     Box_Collider *player_box_collider = malloc(sizeof(Box_Collider));
     player_box_collider->entity_id = PLAYER_ID;
-    player_box_collider->w = 16;
-    player_box_collider->h = 16;
+    player_box_collider->w = 15;
+    player_box_collider->h = 15;
     add_component(&components->box_collider, player_box_collider, PLAYER_ID);
 
     // Animation
@@ -148,11 +148,11 @@ void game_update(void)
         int move_x = 0;
         int move_y = 0;
 
-        if(get_input("left"))
+        if(get_input_down("left"))
         {
             move_x -= 1;
         }
-        else if(get_input("right"))
+        else if(get_input_down("right"))
         {
             move_x += 1;
         }
@@ -165,9 +165,9 @@ void game_update(void)
             move_y += 1;
         }
 
-        move_x *= 1;
+        move_x *= 40;
         move_y *= 1;
-        Collision_Info col_info = complex_grid_collision(
+        Collision_Info col_info = perfect_grid_collision(
             &components->grid_collider, &components->position,
             &components->box_collider, move_x, move_y, PLAYER_ID, GRID_COL_ID
         );

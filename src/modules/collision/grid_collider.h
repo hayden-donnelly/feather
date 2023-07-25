@@ -25,3 +25,9 @@ Collision_Info complex_grid_collision(
     Component_Type *box_collider_type, int move_x, int move_y, int mover_id, 
     int grid_collider_id
 );
+
+Collision_Info perfect_grid_collision(
+    Component_Type *grid_collider_type, Component_Type *position_type, 
+    Component_Type *box_collider_type, int move_x, int move_y, int mover_id, 
+    int grid_collider_id
+);
