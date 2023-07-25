@@ -207,17 +207,12 @@ Collision_Info grid_collision_old(Component_Type *grid_collider_type, Component_
     return collision_info;
 }
 
-int position_to_grid_id(int x, int y, int grid_width, int cell_width, int cell_height)
+int position_to_grid_id(int x, int y, Grid_Collider *grid_collider)
 {
-    /*int grid_x = (int)floor((double)x / (double)grid_collider->cell_width) + 1;
-    int grid_y = (int)floor((double)x / (double)grid_collider->cell_height);
+    int grid_x = (int)floor((double)x / (double)grid_collider->cell_width) + 1;
+    int grid_y = (int)floor((double)y / (double)grid_collider->cell_height);
     int grid_id = grid_y * grid_collider->grid_width + grid_x;
     printf("x: %d\n", grid_x);
-    return grid_id;*/
-
-    int grid_x = (int)floor((double)x / (double)cell_width) + 1;
-    int grid_y = (int)floor((double)y / (double)cell_height);
-    int grid_id = grid_y * grid_width + grid_x;
     return grid_id;
 }
 
@@ -235,17 +230,7 @@ Collision_Info simple_grid_collision(
     collision_info.modified_move_y = move_y;
 
     Grid_Collider *grid_collider = get_component(grid_collider_type, grid_collider_id);
-    int grid_x = (int)floor((double)new_x / (double)grid_collider->cell_width) + 1;
-    int grid_y = (int)floor((double)new_y / (double)grid_collider->cell_height);
-    int grid_id = grid_y * grid_collider->grid_width + grid_x;
-    
-    printf("First ID: %d\n", grid_id);
-    //int grid_id = position_to_grid_id(new_x, new_y, grid_collider);
-    int grid_id2 = position_to_grid_id(
-        new_x, new_y, grid_collider->grid_width, 
-        grid_collider->cell_width, grid_collider->cell_height
-    );
-    printf("Second ID: %d\n", grid_id2);
+    int grid_id = position_to_grid_id(new_x, new_y, grid_collider);
 
     if(grid_collider->collision_ids[grid_id] == 1)
     {
