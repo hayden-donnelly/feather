@@ -275,35 +275,63 @@ Collision_Info complex_grid_collision(
 
     if(move_x > 0)
     {
-        int bot_right_x = mover_position->x + mover_collider->w + move_x;
+        int top_right_x = mover_position->x + mover_collider->w + move_x;
+        int top_right_y = mover_position->y;
+        int bot_right_x = top_right_x;
         int bot_right_y = mover_position->y + mover_collider->h;
-        /*int top_right_id = position_to_grid_id(top_right_x, top_right_y, grid_collider);
+
+        int top_right_id = position_to_grid_id(top_right_x, top_right_y, grid_collider);
         int bot_right_id = position_to_grid_id(bot_right_x, bot_right_y, grid_collider);
         if(grid_collider->collision_ids[top_right_id] == 0 && 
            grid_collider->collision_ids[bot_right_id] == 0)
         {
             collision_info.modified_move_x = move_x;
-        }*/
-        int bot_right_id = 0;//position_to_grid_id(bot_right_x, bot_right_y, grid_collider);
-        if(grid_collider->collision_ids[bot_right_id] == 0)
-        {
-            collision_info.modified_move_x = move_x;
         }
-        printf("Collision ID: %d\n", grid_collider->collision_ids[bot_right_id]);
     }
     else if(move_x < 0)
     {
-        /*int top_left_id = position_to_grid_id(top_left_x, top_left_y, grid_collider);
+        int top_left_x = mover_position->x + move_x;
+        int top_left_y = mover_position->y;
+        int bot_left_x = top_left_x;
+        int bot_left_y = mover_position->y + mover_collider->h;
+
+        int top_left_id = position_to_grid_id(top_left_x, top_left_y, grid_collider);
         int bot_left_id = position_to_grid_id(bot_left_x, bot_left_y, grid_collider);
         if(grid_collider->collision_ids[top_left_id] == 0 && 
            grid_collider->collision_ids[bot_left_id] == 0)
         {
             collision_info.modified_move_x = move_x;
-        }*/
-        int bot_left_id = 0;//position_to_grid_id(bot_left_x, bot_left_y, grid_collider);
-        if(grid_collider->collision_ids[bot_left_id] == 0)
+        }
+    }
+
+    if(move_y < 0)
+    {
+        int top_left_x = mover_position->x;
+        int top_left_y = mover_position->y + move_y;
+        int top_right_x = mover_position->x + mover_collider->w;
+        int top_right_y = top_left_y;
+
+        int top_left_id = position_to_grid_id(top_left_x, top_left_y, grid_collider);
+        int top_right_id = position_to_grid_id(top_right_x, top_right_y, grid_collider);
+        if(grid_collider->collision_ids[top_left_id] == 0 && 
+           grid_collider->collision_ids[top_right_id] == 0)
         {
-            collision_info.modified_move_x = move_x;
+            collision_info.modified_move_y = move_y;
+        }
+    }
+    else if(move_y > 0)
+    {
+        int bot_left_x = mover_position->x;
+        int bot_left_y = mover_position->y + mover_collider->h + move_y;
+        int bot_right_x = mover_position->x + mover_collider->w;
+        int bot_right_y = bot_left_y;
+
+        int bot_left_id = position_to_grid_id(bot_left_x, bot_left_y, grid_collider);
+        int bot_right_id = position_to_grid_id(bot_right_x, bot_right_y, grid_collider);
+        if(grid_collider->collision_ids[bot_left_id] == 0 && 
+           grid_collider->collision_ids[bot_right_id] == 0)
+        {
+            collision_info.modified_move_y = move_y;
         }
     }
 
