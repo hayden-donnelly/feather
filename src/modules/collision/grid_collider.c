@@ -12,13 +12,6 @@ int get_grid_y(int y, Grid_Collider *grid_collider)
     return (int)floor((double)y / (double)grid_collider->cell_height);
 }
 
-int sign(int number)
-{
-    if(number > 0) { return 1; }
-    if(number < 0) { return -1; }
-    return 0;
-}
-
 int position_to_grid_id(int x, int y, Grid_Collider *grid_collider)
 {
     int grid_x = get_grid_x(x, grid_collider);
@@ -26,6 +19,13 @@ int position_to_grid_id(int x, int y, Grid_Collider *grid_collider)
     int grid_id = grid_y * grid_collider->grid_width + grid_x;
     printf("x: %d\n", grid_x);
     return grid_id;
+}
+
+int sign(int number)
+{
+    if(number > 0) { return 1; }
+    if(number < 0) { return -1; }
+    return 0;
 }
 
 Collision_Info simple_grid_collision(
@@ -156,6 +156,8 @@ Collision_Info perfect_grid_collision(
     int top_right_y = mover_position->y;
     int top_left_x = mover_position->x;
     int top_left_y = top_right_y;
+    int bot_right_x = top_right_x;
+    int bot_right_y = mover_position->y + mover_collider->h;
 
     int move_x_sign = sign(move_x);
     int abs_move_x = abs(move_x);
@@ -166,34 +168,63 @@ Collision_Info perfect_grid_collision(
     {
         int grid_x = get_grid_x(top_right_x, grid_collider);
         int right_vertical_position = (grid_x + 1) * grid_collider->cell_width;
-        int distance_to_nearest_vertical = right_vertical_position - top_right_x;
+        // X movement from start to first vertical intersection.
+        int delta_x_0 = right_vertical_position - top_right_x;
+        // X movement per vertical intersection.
+        int delta_x = grid_collider->cell_width;
         
-        if(abs_move_x < distance_to_nearest_vertical)
+        if(abs_move_x < delta_x_0)
         {
             collision_info.modified_move_x = move_x;
         }
         else
         {
-            int vertical_intersection_count = 1 + (int)floor(
-                (double)(abs_move_x - distance_to_nearest_vertical) / 
+            int vertical_intersections = 1 + (int)floor(
+                (double)(abs_move_x - delta_x_0) / 
                 (double)grid_collider->cell_width
             );
 
-            printf("Vertical intersections: %d\n", vertical_intersection_count);
+            // Percentage of total movement per vertical intersection.
+            double movement_ratio = (double)grid_collider->cell_width / (double)move_x;
+            // Y movement per vertical intersection.
+            int delta_y = (int)(movement_ratio * (double)move_y);
+            // Percentage of total movement from start to first vertical intersection.
+            double movement_ratio_0 = (double)delta_x_0 / (double)move_x;
+            // Y movement from start to first vertical intersection.
+            int delta_y_0 = (int)(movement_ratio_0 * (double)move_y) ;
 
-            int non_collision_intersection_count = 0;
+            printf("Vertical intersections: %d\n", vertical_intersections);
 
-            for(int i = 1; i <= vertical_intersection_count; i++)
+            int non_collision_intersections = 0;
+
+            for(int i = 0; i < vertical_intersections; i++)
             {
-                if(grid_collider->collision_ids[grid_x + i] == 1) { break; }
-                non_collision_intersection_count = i;
+                int total_delta_x = delta_x_0 + delta_x * i;
+                int total_delta_y = delta_y_0 + delta_y * i;
+                int top_right_id = position_to_grid_id(
+                    top_right_x + total_delta_x, 
+                    top_right_y + total_delta_y, 
+                    grid_collider
+                );
+                int bot_right_id = position_to_grid_id(
+                    bot_right_x + total_delta_x,
+                    bot_right_y + total_delta_y,
+                    grid_collider
+                );
+                
+                if(grid_collider->collision_ids[top_right_id]
+                    || grid_collider->collision_ids[bot_right_id])
+                {
+                    break;
+                }
+                non_collision_intersections = i + 1;
             }
 
-            printf("Non collision intersections: %d\n", non_collision_intersection_count);
+            printf("Non collision intersections: %d\n", non_collision_intersections);
 
             collision_info.modified_move_x = 
-                distance_to_nearest_vertical - 1
-                + (non_collision_intersection_count)
+                delta_x_0 - 1
+                + non_collision_intersections
                 * grid_collider->cell_width;
         }
     }
