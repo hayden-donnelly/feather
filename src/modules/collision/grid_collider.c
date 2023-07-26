@@ -226,8 +226,7 @@ Collision_Info horizontal_collision(
     int is_right_point, int is_bot_point
 )
 {
-    // Need to be checking is_bot_point and is_right_point for both
-    // vertical and horizontal collision.
+    // Right offset and bot offset are necessary for both horizontal and vertical.
 
     // TODO: maybe rename these to intersection and collision offset.
     // This makes BOTTOM points find the correct horizontal.

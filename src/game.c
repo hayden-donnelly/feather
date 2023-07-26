@@ -148,25 +148,25 @@ void game_update(void)
         int move_x = 0;
         int move_y = 0;
 
-        if(get_input_down("left"))
+        if(get_input("left"))
         {
-            move_x -= 1;
+            move_x = -1;
         }
-        else if(get_input_down("right"))
+        if(get_input("right"))
         {
-            move_x += 1;
+            move_x = 1;
         }
-        else if(get_input_down("up"))
+        if(get_input("up"))
         {
-            move_y -= 1;
+            move_y = -1;
         }
-        else if(get_input_down("down"))
+        if(get_input("down"))
         {
-            move_y += 1;
+            move_y = 1;
         }
 
-        move_x *= 16;
-        move_y *= 16;
+        move_x *= 3;
+        move_y *= 3;
         Collision_Info col_info = perfect_grid_collision(
             &components->grid_collider, &components->position,
             &components->box_collider, move_x, move_y, PLAYER_ID, GRID_COL_ID
