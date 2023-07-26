@@ -144,7 +144,7 @@ Collision_Info complex_grid_collision(
 
 Collision_Info vertical_collision(
     Grid_Collider *grid_collider, int x_0, int y_0, int move_x, int move_y, 
-    int is_right_point
+    int is_right_point, int is_bot_point
 )
 {
     // This makes RIGHT points find the correct vertical.
@@ -158,6 +158,8 @@ Collision_Info vertical_collision(
         // LEFT offset is only required when moving leftwards.
         if(move_x < 0) { left_x_offset = 1; }
     }
+    // This makes BOTTOM points always check collision properly.
+    int bot_y_offset = (is_bot_point) ? 1 : 0;
 
     Collision_Info collision_info;
     int grid_x = get_grid_x(x_0 - right_x_offset, grid_collider);
@@ -199,7 +201,7 @@ Collision_Info vertical_collision(
     {
         int grid_id = position_to_grid_id(
             x_0 + collision_info.modified_move_x - left_x_offset,
-            y_0 + collision_info.modified_move_y,
+            y_0 + collision_info.modified_move_y - bot_y_offset,
             grid_collider
         );
         if(grid_collider->collision_ids[grid_id] == 1) { break; }
@@ -308,7 +310,7 @@ Collision_Info point_collision(
 )
 {
     Collision_Info vertical = vertical_collision(
-        grid_collider, x_0, y_0, move_x, move_y, is_right_point
+        grid_collider, x_0, y_0, move_x, move_y, is_right_point, is_bot_point
     );
     Collision_Info horizontal = horizontal_collision(
         grid_collider, x_0, y_0, move_x, move_y, is_right_point, is_bot_point
