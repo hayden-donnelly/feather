@@ -39,8 +39,8 @@ void game_init(void)
 
     Box_Collider *player_box_collider = malloc(sizeof(Box_Collider));
     player_box_collider->entity_id = PLAYER_ID;
-    player_box_collider->w = 15;
-    player_box_collider->h = 15;
+    player_box_collider->w = 16;
+    player_box_collider->h = 16;
     add_component(&components->box_collider, player_box_collider, PLAYER_ID);
 
     // Animation
