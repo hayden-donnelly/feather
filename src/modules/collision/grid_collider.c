@@ -204,14 +204,13 @@ Collision_Info vertical_collision(
         );
         if(grid_collider->collision_ids[grid_id] == 1) { break; }
         collision_info.modified_move_x += delta_x;
-        collision_info.modified_move_x += delta_y;
+        collision_info.modified_move_y += delta_y;
     }
     if(abs(collision_info.modified_move_x) > abs(move_x))
     {
         collision_info.modified_move_x = move_x;
         collision_info.modified_move_y = move_y;
     }
-    //collision_info.modified_move_x += offset;
 
     printf(
         "Modified x: %d, delta_x_0: %d\n", 
@@ -221,33 +220,46 @@ Collision_Info vertical_collision(
 }
 
 Collision_Info horizontal_collision(
-    Grid_Collider *grid_collider, int x_0, int y_0, int move_x, int move_y
+    Grid_Collider *grid_collider, int x_0, int y_0, int move_x, int move_y, 
+    int is_bot_point
 )
 {
+    // This makes BOTTOM points find the correct horizontal.
+    int bot_y_offset = 1;
+    // This makes TOP points check collision properly when moving upwards.
+    int top_y_offset = 0;
+    if(!is_bot_point)
+    {
+        // Not a BOTTOM point, so offset is not needed.
+        bot_y_offset = 0;
+        // TOP offset is only required when moving upwards.
+        if(move_y < 0) { top_y_offset = 1; }
+    }
+
     Collision_Info collision_info;
-    int grid_y = get_grid_y(y_0, grid_collider);
+    int grid_y = get_grid_y(y_0 - bot_y_offset, grid_collider);
     // This is the position of the nearest UP horizontal by default.
-    int nearest_horizontal_position = grid_y * grid_collider->cell_height;
-    // If moving down, add cell height to get DOWN vertical instead.
-    if(move_y > 0) { nearest_horizontal_position += grid_collider->cell_height; }
+    int nearest_horizontal_position = grid_y * grid_collider->cell_width;
+    // If moving down, add cell height to get DOWN horizontal instead.
+    if(move_y > 0) { grid_y += grid_collider->cell_height; }
     // Y movement from start to first horizontal intersection.
     int delta_y_0 = nearest_horizontal_position - y_0;
-    // Y movement per vertical intersection.
-    int delta_y = grid_collider->cell_height;
-    int offset = -sign(move_y);
-
-    if(abs(move_y) <= abs(delta_y_0))
+    // Y movement per horizontal intersection.
+    int delta_y = grid_collider->cell_height * sign(move_y);
+    
+    if(move_y == 0)
+    {
+        collision_info.modified_move_x = move_x;
+        collision_info.modified_move_y = 0;
+        return collision_info;
+    }
+    else if(abs(move_y) < abs(delta_y_0))
     {
         // Don't modify movement because there is no chance of collision.
         collision_info.modified_move_x = move_x;
         collision_info.modified_move_y = move_y;
         return collision_info;
     }
-
-    int max_horizontal_intersections = 1 + (int)floor(
-        (double)(abs(move_y) - delta_y_0) / 
-        (double)grid_collider->cell_height
-    );
 
     // Percentage of total movement per horizontal intersection.
     double movement_ratio = (double)grid_collider->cell_height / (double)move_y;
@@ -258,53 +270,49 @@ Collision_Info horizontal_collision(
     // X movement from start to first horizontal intersection.
     int delta_x_0 = (int)(movement_ratio_0 * (double)move_x);
 
-    int non_collision_intersections = 0;
-    for(int i = 0; i < max_horizontal_intersections; i++)
+    collision_info.modified_move_x = delta_x_0;
+    collision_info.modified_move_y = delta_y_0;
+    while(abs(collision_info.modified_move_y) < abs(move_y))
     {
         int grid_id = position_to_grid_id(
-            x_0 + delta_x_0 + delta_x * i, 
-            y_0 + delta_y_0 + delta_y * i, 
+            x_0 + collision_info.modified_move_x,
+            y_0 + collision_info.modified_move_y - top_y_offset,
             grid_collider
         );
-
-        if(grid_collider->collision_ids[grid_id]) { break; }
-        non_collision_intersections = i + 1;
+        if(grid_collider->collision_ids[grid_id] == 1) { break; }
+        collision_info.modified_move_x += delta_x;
+        collision_info.modified_move_y += delta_y;
     }
-
-    if(non_collision_intersections == max_horizontal_intersections)
+    if(abs(collision_info.modified_move_y) > abs(move_y))
     {
-        // Don't modify movement because there were no collisions.
         collision_info.modified_move_x = move_x;
         collision_info.modified_move_y = move_y;
     }
-    else
-    {
-        // Decrease movement so it ends at the edge of the collision.
-        collision_info.modified_move_x = 
-            delta_x_0 + non_collision_intersections * delta_x;
-        collision_info.modified_move_y = 
-            delta_y_0 + non_collision_intersections * delta_y + offset;
-    }
+
+    printf(
+        "Modified x: %d, delta_y_0: %d\n", 
+        collision_info.modified_move_x, delta_y_0
+    );
     return collision_info;
 }
 
 Collision_Info point_collision(
     Grid_Collider *grid_collider, int x_0, int y_0, int move_x, int move_y, 
-    int is_right_point
+    int is_right_point, int is_bot_point
 )
 {
     Collision_Info vertical = 
         vertical_collision(grid_collider, x_0, y_0, move_x, move_y, is_right_point);
     Collision_Info horizontal = 
-        horizontal_collision(grid_collider, x_0, y_0, move_x, move_y);
+        horizontal_collision(grid_collider, x_0, y_0, move_x, move_y, is_bot_point);
 
     double vertical_length = 
         vector_length(vertical.modified_move_x, vertical.modified_move_y);
     double horizontal_length =
         vector_length(horizontal.modified_move_x, horizontal.modified_move_y);
 
-    //if(vertical_length < horizontal_length) { return vertical; }
-    //else { return horizontal; }
+    if(vertical_length < horizontal_length) { return vertical; }
+    else { return horizontal; }
     return vertical;
 }
 
@@ -332,13 +340,13 @@ Collision_Info perfect_grid_collision(
     int bot_left_y = bot_right_y;
 
     Collision_Info top_left_ci = 
-        point_collision(grid_collider, top_left_x, top_left_y, move_x, move_y, 0);
+        point_collision(grid_collider, top_left_x, top_left_y, move_x, move_y, 0, 0);
     Collision_Info top_right_ci = 
-        point_collision(grid_collider, top_right_x, top_right_y, move_x, move_y, 1);
+        point_collision(grid_collider, top_right_x, top_right_y, move_x, move_y, 1, 0);
     Collision_Info bot_left_ci = 
-        point_collision(grid_collider, bot_left_x, bot_left_y, move_x, move_y, 0);
+        point_collision(grid_collider, bot_left_x, bot_left_y, move_x, move_y, 0, 1);
     Collision_Info bot_right_ci =
-        point_collision(grid_collider, bot_right_x, bot_right_y, move_x, move_y, 1);
+        point_collision(grid_collider, bot_right_x, bot_right_y, move_x, move_y, 1, 1);
     if(move_x != 0) { printf("----------------\n"); }
 
     double top_left_length = 
