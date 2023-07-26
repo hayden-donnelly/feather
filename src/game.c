@@ -148,19 +148,19 @@ void game_update(void)
         int move_x = 0;
         int move_y = 0;
 
-        if(get_input("left"))
+        if(get_input_down("left"))
         {
             move_x -= 1;
         }
-        else if(get_input("right"))
+        else if(get_input_down("right"))
         {
             move_x += 1;
         }
-        else if(get_input("up"))
+        else if(get_input_down("up"))
         {
             move_y -= 1;
         }
-        else if(get_input("down"))
+        else if(get_input_down("down"))
         {
             move_y += 1;
         }
