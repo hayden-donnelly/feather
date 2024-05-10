@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "*.c": "c",
-        "components.h": "c",
-        "algorithm": "c"
-    }
-}
