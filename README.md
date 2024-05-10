@@ -9,6 +9,11 @@ Collision is currently a work in progress.
 * SDL2
 * SDL2_image
 
+## Nix Development Environment
+
+If you have Nix installed and Flakes enabled, you can run `nix develop` to enter a 
+development shell with all the dependencies installed.
+
 ## Compilation and Execution
 
 To compile:
